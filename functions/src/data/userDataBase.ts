@@ -6,7 +6,8 @@ import {
   SendFullNameUserGateway,
   SendPhoneNumberUserGateway,
   SendBirthdayUserGateway,
-  SendAdressUserGateway
+  SendAdressUserGateway,
+  SendAmountRequestedGateway
 } from "../business/gateways/user/userGateway";
 import { User } from "../business/entities/user/user";
 
@@ -18,13 +19,15 @@ export class UserDataBase extends BaseDataBase
     SendFullNameUserGateway,
     SendPhoneNumberUserGateway,
     SendBirthdayUserGateway,
-    SendAdressUserGateway {
+    SendAdressUserGateway,
+    SendAmountRequestedGateway {
   private static TABLE_USERS: string = "Users";
   private static TABLE_CPF: string = "Cpf";
   private static TABLE_NAME: string = "Full_Name";
   private static TABLE_PHONE: string = "Phone_Number";
   private static TABLE_BIRTHDAY: string = "Birthday";
   private static TABLE_ADRESS: string = "Adress";
+  private static TABLE_LOANS: string = "Loans";
 
   async createUser(user: User): Promise<void> {
     await this.connection.raw(`
@@ -110,5 +113,17 @@ export class UserDataBase extends BaseDataBase
             VALUES ("${cep}", "${street}","${number}","${complement}","${city}","${state}","${userId}","${date}" ) 
             ON DUPLICATE KEY UPDATE updated_at="${date}";
             `);
+  }
+
+  async sendAmountRequested(
+    amountRequested: number,
+    userId: string,
+    date: string
+  ): Promise<void> {
+    await this.connection.raw(`
+            INSERT INTO ${UserDataBase.TABLE_LOANS} (total_amount, user_id, updated_at)
+            VALUES ("${amountRequested}", "${userId}", "${date}")
+            ON DUPLICATE KEY UPDATE updated_at="${date}";
+    `);
   }
 }

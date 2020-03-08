@@ -48,3 +48,7 @@ export interface SendAdressUserGateway {
     date: string
   ): Promise<void>;
 }
+
+export interface SendAmountRequestedGateway {
+  sendAmountRequested(amountRequested: number, userId: string, date: string): Promise<void>
+}
