@@ -31,6 +31,7 @@ import {
   SendAdressUserUc,
   SendAdressUserUcInput
 } from "./business/useCases/user/sendAdress";
+import { ViaCep } from "./services/viaCep";
 
 admin.initializeApp();
 const app = express();
@@ -187,7 +188,8 @@ app.post("/sendAdress", async (req: Request, res: Response) => {
   try {
     const useCase = new SendAdressUserUc(
       new JWTCryptography(),
-      new UserDataBase()
+      new UserDataBase(),
+      new ViaCep()
     );
 
     const input: SendAdressUserUcInput = {
