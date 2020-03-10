@@ -11,7 +11,7 @@ export class JWTCryptography implements GenerateTokenAuthenticationGateway, GetU
 
     getJWTSecretKey(): string {
         if (!process.env.JWT_SECRET_KEY) {
-            throw new Error('Chave JWT não informada')
+            throw new Error('Chave secreta JWT não informada')
         }
         return process.env.JWT_SECRET_KEY
     }
@@ -25,8 +25,12 @@ export class JWTCryptography implements GenerateTokenAuthenticationGateway, GetU
     }
 
     getUserIdFromToken(token: string): string {
-        const jwtData = jwt.verify(token, this.getJWTSecretKey()) as JWTData
-        return jwtData.userId
+        try{
+            const jwtData = jwt.verify(token, this.getJWTSecretKey()) as JWTData
+            return jwtData.userId
+        }catch (err) {
+            throw new Error ("Chave JWT não verificada")
+        }
     }
 
 }
