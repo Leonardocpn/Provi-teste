@@ -67,7 +67,7 @@ app.post("/createUser", async (req: Request, res: Response) => {
 
     const input: CreateUserUCInput = {
       email: req.body.email,
-      password: req.body.password
+      password: req.body.password,
     };
 
     const result = await useCase.execute(input);
@@ -126,6 +126,7 @@ app.post("/sendFullName", async (req: Request, res: Response) => {
   try {
     const useCase = new SendFullNameUserUC(
       new JWTCryptography(),
+      new UserDataBase(),
       new UserDataBase()
     );
 

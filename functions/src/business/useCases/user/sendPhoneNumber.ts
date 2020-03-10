@@ -1,12 +1,13 @@
 import { GetUserIdFromTokenGateway } from "../../gateways/auth/autenticationGateway";
 import { SendPhoneNumberUserGateway } from "../../gateways/user/userGateway";
 import moment from "moment";
+import { Order, UseCase } from "../../OrderOfRequester/orderOfRequester";
 
 export class SendPhoneNumberUserUC {
   constructor(
     private getUserIdFromTokenGateway: GetUserIdFromTokenGateway,
     private sendPhoneNumberUser: SendPhoneNumberUserGateway
-  ) {}
+  ) { }
 
   async execute(
     input: SendPhoneNumberUserUCInput
@@ -16,12 +17,19 @@ export class SendPhoneNumberUserUC {
         input.token
       );
       const date = moment().format("DD/MM/YYYY HH-mm-ss");
-      await this.sendPhoneNumberUser.sendPhoneNumber(input.data, userId, date);
-      return { message: "Número de telefone adicionado com sucesso" };
-    } catch (err) {
+      const prevTable = Order[UseCase.PHONE_NUMBER].prevTable;
+      await this.sendPhoneNumberUser.sendPhoneNumber(
+        input.data,
+        userId,
+        date,
+        prevTable
+      );
       return {
-        message: err.message
+        sucess: "true",
+        nextEndPoint: Order[UseCase.PHONE_NUMBER].nextEndpoint
       };
+    } catch (err) {
+      throw new Error(err.message)
     }
   }
 }
@@ -32,5 +40,6 @@ export interface SendPhoneNumberUserUCInput {
 }
 
 export interface SendPhoneNumberUserUCOutput {
-  message: string;
+  sucess: string;
+  nextEndPoint: string
 }

@@ -2,13 +2,14 @@ import { GetUserIdFromTokenGateway } from "../../gateways/auth/autenticationGate
 import { SendAdressUserGateway } from "../../gateways/user/userGateway";
 import moment from "moment";
 import { GetAdressFromApiGateway } from "../../gateways/services/getAdressFromApiGateway";
+import { Order, UseCase } from "../../OrderOfRequester/orderOfRequester";
 
 export class SendAdressUserUc {
   constructor(
     private getUserIdFromTokenGateway: GetUserIdFromTokenGateway,
     private sendAdressUserGateway: SendAdressUserGateway,
     private getAdressFromApiGateway: GetAdressFromApiGateway
-  ) {}
+  ) { }
 
   async execute(input: SendAdressUserUcInput): Promise<SendAdressUserUcOutput> {
     try {
@@ -18,6 +19,7 @@ export class SendAdressUserUc {
         input.token
       );
       const date = moment().format("DD/MM/YYYY HH-mm-ss");
+      const prevTable = Order[UseCase.ADRESS].prevTable
       const externalAdress = await this.getAdressFromApiGateway.getAdress(
         validateCep
       );
@@ -30,15 +32,15 @@ export class SendAdressUserUc {
         input.city,
         input.state,
         userId,
-        date
+        date,
+        prevTable
       );
       return {
-        message: "Endereço cadastrado com sucesso"
+        sucess: "true",
+        nextEndpoint: Order[UseCase.ADRESS].nextEndpoint
       };
     } catch (err) {
-      return {
-        message: err.message
-      };
+      throw new Error(err.message);
     }
   }
 
@@ -85,12 +87,6 @@ export interface SendAdressUserUcInput {
 }
 
 export interface SendAdressUserUcOutput {
-  message: string;
+  sucess: string;
+  nextEndpoint: string
 }
-
-// interface ExternalAdress {
-//     logradouro: string
-//     localidade: string
-//     uf: string
-
-// }

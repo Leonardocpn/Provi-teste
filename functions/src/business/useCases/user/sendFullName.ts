@@ -1,11 +1,13 @@
 import { GetUserIdFromTokenGateway } from "../../gateways/auth/autenticationGateway";
-import { SendFullNameUserGateway } from "../../gateways/user/userGateway";
+import { SendFullNameUserGateway, GetEndpointsOrder } from "../../gateways/user/userGateway";
 import moment from "moment";
+import {Order, UseCase} from "../../OrderOfRequester/orderOfRequester"
 
 export class SendFullNameUserUC {
   constructor(
     private getUserIdFromTokenGateway: GetUserIdFromTokenGateway,
-    private sendFullNameUserGateway: SendFullNameUserGateway
+    private sendFullNameUserGateway: SendFullNameUserGateway,
+    private getEndpointsOrder: GetEndpointsOrder
   ) {}
 
   async execute(
@@ -16,19 +18,22 @@ export class SendFullNameUserUC {
         input.token
       );
       const date = moment().format("DD/MM/YYYY HH-mm-ss");
+      const userOrder = await this.getEndpointsOrder.getOrder(userId)
+      console.log(JSON.stringify(userOrder))
+      const prevTable = Order[UseCase.FULL_NAME].prevTable
       await this.sendFullNameUserGateway.sendFullNameUser(
         input.data,
         userId,
-        date
+        date,
+        prevTable
       );
 
       return {
-        message: "Nome adicionado com sucesso"
+        sucess: "true",
+        nextEndpoint: Order[UseCase.FULL_NAME].nextEndpoint
       };
     } catch (err) {
-      return {
-        message: err.message
-      };
+      throw new Error (err.message)
     }
   }
 }
@@ -39,5 +44,7 @@ export interface SendFullNameUserUCInput {
 }
 
 export interface SendFullNameUserUCOutput {
-  message: string;
+  sucess: string;
+  nextEndpoint: string
 }
+

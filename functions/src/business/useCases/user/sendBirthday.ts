@@ -1,6 +1,7 @@
 import { GetUserIdFromTokenGateway } from "../../gateways/auth/autenticationGateway";
 import { SendBirthdayUserGateway } from "../../gateways/user/userGateway";
 import moment from "moment";
+import { Order, UseCase } from "../../OrderOfRequester/orderOfRequester";
 export class SendBirthdayUserUC {
     constructor(
         private getUserFromIdGateway: GetUserIdFromTokenGateway,
@@ -15,12 +16,19 @@ export class SendBirthdayUserUC {
                 input.token
             );
             const date = moment().format("DD/MM/YYYY HH-mm-ss");
-            await this.sendBirthdayUserGateway.sendBirthday(input.data, userId, date);
-            return { message: "Data de nascimento cadastrada com sucesso" };
-        } catch (err) {
+            const prevTable = Order[UseCase.BIRTHDAY].prevTable;
+            await this.sendBirthdayUserGateway.sendBirthday(
+                input.data,
+                userId,
+                date,
+                prevTable
+            );
             return {
-                message: err.message
+                sucess: "true",
+                nextEndpoint: Order[UseCase.BIRTHDAY].nextEndpoint
             };
+        } catch (err) {
+            throw new Error(err.message);
         }
     }
 }
@@ -31,5 +39,6 @@ export interface SendBirthdayUserUCInput {
 }
 
 export interface SendBirthdayUserUCOutput {
-    message: string;
+    sucess: string;
+    nextEndpoint: string;
 }

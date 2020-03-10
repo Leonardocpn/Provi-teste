@@ -1,8 +1,10 @@
 export class User {
+        
     constructor(
         private id: string,
         private email: string,
         private password: string,
+        private endpointsOrder = ["cpf", "fullName", "Address"],
         private phone?: string,
         private adrees?: string,
         private firstName?: string,
@@ -42,5 +44,9 @@ export class User {
 
     public getAdress(): string | undefined {
         return this.adrees
+    }
+
+    public getEndpointsOrder(): string[] | undefined{
+        return this.endpointsOrder
     }
 }

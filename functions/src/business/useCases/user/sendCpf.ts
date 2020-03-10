@@ -2,6 +2,7 @@ import { GetUserIdFromTokenGateway } from "../../gateways/auth/autenticationGate
 import { SendCpfUserGateway } from "../../gateways/user/userGateway";
 import moment from "moment";
 import CPF from "cpf-check"
+import { Order, UseCase } from "../../OrderOfRequester/orderOfRequester";
 
 export class SendCpfUserUC {
   constructor(
@@ -19,14 +20,14 @@ export class SendCpfUserUC {
       }
       const date = moment().format("DD/MM/YYYY HH-mm-ss");
       const cpfFormated = CPF.format(input.data)
+      const nextEndpoint = Order[UseCase.CPF].nextEndpoint
       await this.sendCpfUserGateway.sendCpfUser(cpfFormated, userId, date);
       return {
-        message: "CPF Incluido com sucesso no sistema"
+        sucess: "true",
+        nextEndpoint
       };
     } catch (err) {
-      return {
-        message: err.message
-      };
+      throw new Error (err.message)
     }
   }
 }
@@ -37,5 +38,6 @@ export interface SendCpfUserUCInput {
 }
 
 export interface SendCpfUserUCOutput {
-  message: string;
+  sucess: string;
+  nextEndpoint: string
 }

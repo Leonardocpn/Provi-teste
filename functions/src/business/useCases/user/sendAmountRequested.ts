@@ -1,6 +1,7 @@
 import { GetUserIdFromTokenGateway } from "../../gateways/auth/autenticationGateway";
 import { SendAmountRequestedGateway } from "../../gateways/user/userGateway";
 import moment from "moment"
+import { Order, UseCase } from "../../OrderOfRequester/orderOfRequester";
 
 export class SendAmountRequestedUC {
     constructor(
@@ -15,19 +16,17 @@ export class SendAmountRequestedUC {
                 input.token
             );
             const date = moment().format("DD/MM/YYYY HH-mm-ss");
-            await this.sendAmountRequestedGateway.sendAmountRequested(input.data, userId, date)
+            const prevTable = Order[UseCase.AMOUNT_REQUESTED].prevTable
+            await this.sendAmountRequestedGateway.sendAmountRequested(input.data, userId, date, prevTable)
 
             return {
-                message: "Total solitado cadastrado com sucesso"
-            }
-
-        } catch (err) {
-            return {
-                message: err.message
-            }
+                    sucess: "true",
+                    nextEndpoint: Order[UseCase.AMOUNT_REQUESTED].nextEndpoint
+                  };
+            } catch (err) {
+                throw new Error (err.message)
+          }
         }
-        
-    }
 
     validadeInput(input: SendAmountRequestedUCInput): void {
         if(!input.data){
@@ -43,5 +42,6 @@ export interface SendAmountRequestedUCInput {
 }
 
 export interface SendAmountRequestedUCOutput {
-    message: string
+    sucess: string;
+    nextEndpoint: string
 }

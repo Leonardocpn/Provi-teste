@@ -20,7 +20,8 @@ export interface SendFullNameUserGateway {
   sendFullNameUser(
     fullName: string,
     userId: string,
-    date: string
+    date: string,
+    prevTable: string
   ): Promise<void>;
 }
 
@@ -28,12 +29,13 @@ export interface SendPhoneNumberUserGateway {
   sendPhoneNumber(
     phoneNumber: number,
     userId: string,
-    date: string
+    date: string,
+    prevTable: string
   ): Promise<void>;
 }
 
 export interface SendBirthdayUserGateway {
-  sendBirthday(brithday: string, userId: string, date: string): Promise<void>;
+  sendBirthday(brithday: string, userId: string, date: string,prevTable: string): Promise<void>;
 }
 
 export interface SendAdressUserGateway {
@@ -45,10 +47,16 @@ export interface SendAdressUserGateway {
     city: string,
     state: string,
     userId: string,
-    date: string
+    date: string,
+    prevTable: string
   ): Promise<void>;
 }
 
 export interface SendAmountRequestedGateway {
-  sendAmountRequested(amountRequested: number, userId: string, date: string): Promise<void>
+  sendAmountRequested(amountRequested: number, userId: string, date: string,
+    prevTable: string): Promise<void>
+}
+
+export interface GetEndpointsOrder {
+  getOrder(userId: string): Promise<string[]>
 }
