@@ -7,7 +7,7 @@ import {
 
 export class JWTCryptography implements GenerateTokenAuthenticationGateway, GetUserIdFromTokenGateway {
 
-    private static EXPIRES_IN = "1h"
+    private static EXPIRES_IN = "3h"
 
     getJWTSecretKey(): string {
         if (!process.env.JWT_SECRET_KEY) {
@@ -18,18 +18,18 @@ export class JWTCryptography implements GenerateTokenAuthenticationGateway, GetU
 
     generateToken(userId: string): string {
         return jwt.sign(
-            {userId},
+            { userId },
             this.getJWTSecretKey(),
-            {expiresIn: JWTCryptography.EXPIRES_IN}
+            { expiresIn: JWTCryptography.EXPIRES_IN }
         )
     }
 
     getUserIdFromToken(token: string): string {
-        try{
+        try {
             const jwtData = jwt.verify(token, this.getJWTSecretKey()) as JWTData
             return jwtData.userId
-        }catch (err) {
-            throw new Error ("Chave JWT não verificada")
+        } catch (err) {
+            throw new Error("Chave JWT mal informada ou token espirado")
         }
     }
 

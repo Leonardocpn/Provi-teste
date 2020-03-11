@@ -10,12 +10,8 @@ export class ViaCep implements GetAdressFromApiGateway {
             
             return await axios.get(`https://viacep.com.br/ws/${cep}/json/`)
         }catch (err) {
-            return {
-                message: err.message
-            }
-                
+            throw new Error(`Erro ao consultar o endereco do cliente pela Api via cep  ${err.message}`)
         }
-        
     }
     
 }

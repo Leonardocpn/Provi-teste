@@ -1,19 +1,30 @@
 import bcrypt from 'bcrypt';
-import {EncryptCryptographyGateway} from "../business/gateways/cryptography/cryptographyGateway";
+import { EncryptCryptographyGateway } from "../business/gateways/services/cryptographyGateway";
 
 
 export class BcryptImplamantation implements EncryptCryptographyGateway {
     private static BCRYPT_SALT_ROUNDS = 10
 
     async encrypt(word: string): Promise<string> {
-        const salt = await bcrypt.genSalt(BcryptImplamantation.BCRYPT_SALT_ROUNDS)
+        try{
+            const salt = await bcrypt.genSalt(BcryptImplamantation.BCRYPT_SALT_ROUNDS)
         return await bcrypt.hash(
             word,
             salt
         )
+        } catch (err) {
+            throw new Error(`Erro ao encriptar o password ${err.message}`)
+        }
+        
     }
 
     async compare(word: string, hash: string): Promise<boolean> {
-        return await bcrypt.compare(word, hash)
+        try{
+            return await bcrypt.compare(word, hash)
+        }catch (err) {
+            throw new Error (`Erro de identificação ${err.message}`)
+        }
+
+        
     }
 }

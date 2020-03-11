@@ -1,4 +1,4 @@
-import {IdGeneratorGateway} from "../business/gateways/services/idGeneratorGateway";
+import { IdGeneratorGateway } from "../business/gateways/services/idGeneratorGateway";
 
 import { v4 as uuidv4 } from 'uuid';
 
