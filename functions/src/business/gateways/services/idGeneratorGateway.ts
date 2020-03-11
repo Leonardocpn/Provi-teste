@@ -1,3 +1,3 @@
 export interface IdGeneratorGateway {
-    generate() :string
+    generate(): string
 }
