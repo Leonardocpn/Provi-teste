@@ -34,4 +34,32 @@ describe("Test for sendAmountRequestedUC", () => {
         
     })
 
+    it("Should throw an error for invalid input, total amount not informed",  async () => {
+        const input: SendAmountRequestedUCInput = {
+            data:0,
+            token: "token",
+        }
+
+        const getUserIdFromTokenGateway: GetUserIdFromTokenGateway = {
+            getUserIdFromToken: jest.fn().mockReturnValue("123456789")
+        }
+
+        const sendAmountRequestedGateway: SendAmountRequestedGateway = {
+            sendAmountRequested: jest.fn()
+        }
+
+        const getEndpointsOrder: GetEndpointsOrder = {
+            getOrder: jest.fn().mockReturnValue({ order: ('sendCpf,sendFullName,sendBirthday,sendPhoneNumber,sendAdress,sendAmountRequested') })
+        }
+
+        const useCase = new SendAmountRequestedUC (
+            getUserIdFromTokenGateway, sendAmountRequestedGateway, getEndpointsOrder, "sendAmountRequested"
+        )
+        
+        await expect(useCase.execute(input))
+        .rejects.toThrowError("Valor solicitado não informado")
+        
+        
+    })
+
 })
