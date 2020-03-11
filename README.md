@@ -2,9 +2,13 @@
 Teste para admissão na Provi
 
 A linguagem utilizada foi Typescript com Node.js
+
 Para os endpoints foi utilizado o Firebase Functions com Express.js
+
 Foi utulizado o MySQL hospedado em uma EC2 da AWS
+
 Foram realizados testes unitários com jest
+
 Foi utilizado o npm para gerenciamento de pacotes
 
 # Documentação para os endpoints no Postman
