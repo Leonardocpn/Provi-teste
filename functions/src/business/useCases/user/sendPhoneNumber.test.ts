@@ -34,4 +34,31 @@ describe("Test for sendPhoneNumberUC", () => {
         
     })
 
+    it("Should thow an error for invalid input, phone number is missing",  async () => {
+        const input: SendPhoneNumberUserUCInput = {
+            data:0,
+            token: "token",
+        }
+
+        const getUserIdFromTokenGateway: GetUserIdFromTokenGateway = {
+            getUserIdFromToken: jest.fn().mockReturnValue("123456789")
+        }
+
+        const sendPhoneNumberGateway: SendPhoneNumberUserGateway = {
+            sendPhoneNumber: jest.fn()
+        }
+
+        const getEndpointsOrder: GetEndpointsOrder = {
+            getOrder: jest.fn().mockReturnValue({ order: ('sendCpf,sendFullName,sendBirthday,sendPhoneNumber,sendAdress') })
+        }
+
+        const useCase = new SendPhoneNumberUserUC (
+            getUserIdFromTokenGateway, sendPhoneNumberGateway, getEndpointsOrder, "sendPhoneNumber"
+        )
+        
+        await expect(useCase.execute(input))
+        .rejects.toThrowError("Telefone do usuário faltando")
+        
+    })
+
 })
