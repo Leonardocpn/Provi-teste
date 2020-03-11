@@ -34,4 +34,33 @@ describe("Test for sendFullNameUC", () => {
         
     })
 
-})
+    it("Should throw an error for input missing, full name is missing",  async () => {
+        const input: SendFullNameUserUCInput = {
+            data:"",
+            token: "token",
+        }
+
+        const getUserIdFromTokenGateway: GetUserIdFromTokenGateway = {
+            getUserIdFromToken: jest.fn().mockReturnValue("123456789")
+        }
+
+        const sendFullNameGateway: SendFullNameUserGateway = {
+            sendFullNameUser: jest.fn()
+        }
+
+        const getEndpointsOrder: GetEndpointsOrder = {
+            getOrder: jest.fn().mockReturnValue({ order: ('sendCpf,sendFullName,sendBirthday,sendPhoneNumber') })
+        }
+
+        const useCase = new SendFullNameUserUC (
+            getUserIdFromTokenGateway, sendFullNameGateway, getEndpointsOrder, "sendFullName"
+        )
+        
+        await expect(useCase.execute(input))
+            .rejects.toThrowError("Nome do usuário faltando")
+
+    })
+        
+    })
+
+
