@@ -1,14 +1,16 @@
 import { GetUserIdFromTokenGateway } from "../../gateways/auth/autenticationGateway";
-import { SendAdressUserGateway } from "../../gateways/user/userGateway";
+import { SendAdressUserGateway, GetEndpointsOrder } from "../../gateways/user/userGateway";
 import moment from "moment";
 import { GetAdressFromApiGateway } from "../../gateways/services/getAdressFromApiGateway";
-import { Order, UseCase } from "../../OrderOfRequester/orderOfRequester";
+import { getOrderInfo } from "../../endpoinsInfo/endpoinsInfo";
 
 export class SendAdressUserUc {
   constructor(
     private getUserIdFromTokenGateway: GetUserIdFromTokenGateway,
     private sendAdressUserGateway: SendAdressUserGateway,
-    private getAdressFromApiGateway: GetAdressFromApiGateway
+    private getAdressFromApiGateway: GetAdressFromApiGateway,
+    private getEndpointsOrder: GetEndpointsOrder,
+    private useCaseOrder: string = "sendAdress"
   ) { }
 
   async execute(input: SendAdressUserUcInput): Promise<SendAdressUserUcOutput> {
@@ -19,13 +21,20 @@ export class SendAdressUserUc {
         input.token
       );
       const date = moment().format("DD/MM/YYYY HH-mm-ss");
-      const prevTable = Order[UseCase.ADRESS].prevTable
+      const userOrdemFromDb = await this.getEndpointsOrder.getOrder(userId)
+      const orderInfo = getOrderInfo(userOrdemFromDb, this.useCaseOrder)
+      const prevTable = orderInfo.prevTable
       const externalAdress = await this.getAdressFromApiGateway.getAdress(
         validateCep
       );
-      this.verifyAdress(input, externalAdress);
+      const adressFromApi = { street: externalAdress.data.logradouro,
+        city: externalAdress.data.localidade,
+        state: externalAdress.data.uf,
+        }
+    
+      const adressDivergence = this.verifyAdressDivergence(input, adressFromApi);
       await this.sendAdressUserGateway.sendAdress(
-        Number(validateCep),
+        validateCep,
         input.street,
         input.number,
         input.complement,
@@ -33,11 +42,15 @@ export class SendAdressUserUc {
         input.state,
         userId,
         date,
-        prevTable
+        prevTable,
+        adressFromApi.street,
+        adressFromApi.city,
+        adressFromApi.state,
+        adressDivergence
       );
       return {
         sucess: "true",
-        nextEndpoint: Order[UseCase.ADRESS].nextEndpoint
+        nextEndpoint: orderInfo.nextEndpoint
       };
     } catch (err) {
       throw new Error(err.message);
@@ -56,29 +69,30 @@ export class SendAdressUserUc {
     }
   }
 
-  validateCep(cep: number): string {
-    const verifiedCep = cep.toString().replace(/\D/g, "");
+  validateCep(cep: string): string {
+    const verifiedCep = cep.replace(/\D/g, "");
     if (verifiedCep.length !== 8) {
       throw new Error("CEP mal informado");
     }
     return verifiedCep;
   }
 
-  verifyAdress(input: SendAdressUserUcInput, externalAdress: any) {
-    const adress: any = externalAdress.data;
+  verifyAdressDivergence(input: SendAdressUserUcInput, adressFromApi: any): boolean {
+    
     if (
-      input.street.toUpperCase() !== adress.logradouro.toUpperCase() ||
-      input.city.toUpperCase() !== adress.localidade.toUpperCase() ||
-      input.state.toUpperCase() !== adress.uf.toUpperCase()
+      input.street.toUpperCase() !== adressFromApi.street.toUpperCase() ||
+      input.city.toUpperCase() !== adressFromApi.city.toUpperCase() ||
+      input.state.toUpperCase() !== adressFromApi.state.toUpperCase()
     ) {
-      throw new Error("Endereço com divergencias");
+      return true
     }
+    return false
   }
 }
 
 export interface SendAdressUserUcInput {
   token: string;
-  cep: number;
+  cep: string;
   street: string;
   number: number;
   complement: string;

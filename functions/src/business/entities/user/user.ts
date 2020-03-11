@@ -1,16 +1,16 @@
 export class User {
-        
+
     constructor(
         private id: string,
         private email: string,
         private password: string,
-        private endpointsOrder = ["cpf", "fullName", "Address"],
+        private endpointsOrder = ["sendCpf", "sendFullName", "sendBirthday", "sendPhoneNumber", "sendAdress", "sendAmountRequested"],
         private phone?: string,
         private adrees?: string,
         private firstName?: string,
         private lastname?: string,
         private birthday?: string,
-        
+
     ) {
     }
 
@@ -18,7 +18,7 @@ export class User {
         return this.id
     }
 
-    public getFirstName(): string | undefined{
+    public getFirstName(): string | undefined {
         return this.firstName
     }
 
@@ -26,7 +26,7 @@ export class User {
         return this.lastname
     }
 
-    public getBirthday(): string | undefined{
+    public getBirthday(): string | undefined {
         return this.birthday
     }
 
@@ -46,7 +46,7 @@ export class User {
         return this.adrees
     }
 
-    public getEndpointsOrder(): string[] | undefined{
+    public getEndpointsOrder(): string[] {
         return this.endpointsOrder
     }
 }

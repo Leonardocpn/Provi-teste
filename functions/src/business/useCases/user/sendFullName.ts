@@ -1,14 +1,17 @@
 import { GetUserIdFromTokenGateway } from "../../gateways/auth/autenticationGateway";
 import { SendFullNameUserGateway, GetEndpointsOrder } from "../../gateways/user/userGateway";
+import { getOrderInfo } from "../../endpoinsInfo/endpoinsInfo"
 import moment from "moment";
-import {Order, UseCase} from "../../OrderOfRequester/orderOfRequester"
+
 
 export class SendFullNameUserUC {
+
   constructor(
     private getUserIdFromTokenGateway: GetUserIdFromTokenGateway,
     private sendFullNameUserGateway: SendFullNameUserGateway,
-    private getEndpointsOrder: GetEndpointsOrder
-  ) {}
+    private getEndpointsOrder: GetEndpointsOrder,
+    private useCaseOrder: string = "sendFullName"
+  ) { }
 
   async execute(
     input: SendFullNameUserUCInput
@@ -18,22 +21,26 @@ export class SendFullNameUserUC {
         input.token
       );
       const date = moment().format("DD/MM/YYYY HH-mm-ss");
-      const userOrder = await this.getEndpointsOrder.getOrder(userId)
-      console.log(JSON.stringify(userOrder))
-      const prevTable = Order[UseCase.FULL_NAME].prevTable
+      const userOrdemFromDb = await this.getEndpointsOrder.getOrder(userId)
+      const orderInfo = getOrderInfo(userOrdemFromDb, this.useCaseOrder)
+      const prevTable = orderInfo.prevTable
       await this.sendFullNameUserGateway.sendFullNameUser(
         input.data,
         userId,
         date,
         prevTable
       );
-
       return {
         sucess: "true",
-        nextEndpoint: Order[UseCase.FULL_NAME].nextEndpoint
+        nextEndpoint: orderInfo.nextEndpoint
       };
     } catch (err) {
-      throw new Error (err.message)
+      throw new Error(err.message)
+    }
+  }
+  validateInput(input: SendFullNameUserUCInput){
+    if(!input.data){
+      throw new Error ("Nome do usuário faltando")
     }
   }
 }
@@ -47,4 +54,3 @@ export interface SendFullNameUserUCOutput {
   sucess: string;
   nextEndpoint: string
 }
-

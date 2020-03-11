@@ -23,7 +23,7 @@ export class UserDataBase extends BaseDataBase
   SendAdressUserGateway,
   SendAmountRequestedGateway,
   GetEndpointsOrder {
-  
+
   private static TABLE_USERS: string = "Users";
   private static TABLE_CPF: string = "Cpfs";
   private static TABLE_NAME: string = "Full_Names";
@@ -33,10 +33,14 @@ export class UserDataBase extends BaseDataBase
   private static TABLE_LOANS: string = "Loans";
 
   async createUser(user: User): Promise<void> {
-    await this.connection.raw(`
-            INSERT INTO ${UserDataBase.TABLE_USERS} (id, email, password, endpoints_order)
-            VALUES ("${user.getId()}", "${user.getEmail()}", "${user.getPassword()}", "${user.getEndpointsOrder()}")
-            `);
+    try {
+      await this.connection.raw(`
+    INSERT INTO ${UserDataBase.TABLE_USERS} (id, email, password, endpoints_order)
+    VALUES ("${user.getId()}", "${user.getEmail()}", "${user.getPassword()}", '${user.getEndpointsOrder()}')
+    `);
+    } catch (err) {
+      throw new Error(`Erro no banco ao criar um usuario : ${err.message}`)
+    }
   }
 
   async getUserByEmail(email: string): Promise<User> {
@@ -47,30 +51,30 @@ export class UserDataBase extends BaseDataBase
 
     const user = query[0][0];
     if (!user) {
-      throw new Error("Usuário não encontrado");
+      throw new Error("Usuario nao encontrado");
     }
     return new User(user.id, user.email, user.password);
   }
 
   async sendCpfUser(cpf: string, userId: string, date: string): Promise<void> {
-    try{
+    try {
       await this.connection.raw(`
             INSERT INTO ${UserDataBase.TABLE_CPF} (cpf, user_id, updated_at, created_at)
-            VALUES ("${cpf}", "${userId}", "${date}", "${date}") ON DUPLICATE KEY UPDATE updated_at="${date}";
+            VALUES ("${cpf}", "${userId}", "${date}", "${date}");
             `);
-    } catch (err){
-        throw new Error(err.message);
-        
+    } catch (err) {
+      throw new Error(`Erro ao inserir o cpf do usuario ${err.message}`);
+
     }
   }
 
   async previousConsult(table: string, userId: string) {
-    const prev = await this.connection.raw(`
+    const query = await this.connection.raw(`
       SELECT * FROM ${table}
-      WHERE user_id="${userId}"`);
+      WHERE user_id="${userId}"`
+    );
 
-    const data = prev[0][0];
-
+    const data = query[0][0];
     if (!data) {
       throw new Error("Consulta anterior não executada");
     }
@@ -88,11 +92,15 @@ export class UserDataBase extends BaseDataBase
 
     await this.previousConsult(prevTable, userId);
 
-    await this.connection.raw(`
+    try {
+      await this.connection.raw(`
             INSERT INTO ${UserDataBase.TABLE_NAME} (first_name, last_name, user_id, updated_at, created_at)
             VALUES ("${first}", "${last}", "${userId}","${date}","${date}" ) 
             ON DUPLICATE KEY UPDATE updated_at="${date}";
             `);
+    } catch (err) {
+      throw new Error(`Erro ao inserir o nome completo do usuario ${err.message}`)
+    }
   }
 
   async sendPhoneNumber(
@@ -102,11 +110,16 @@ export class UserDataBase extends BaseDataBase
     prevTable: string
   ): Promise<void> {
     await this.previousConsult(prevTable, userId);
-    await this.connection.raw(`
+    try {
+      await this.connection.raw(`
             INSERT INTO ${UserDataBase.TABLE_PHONE} (phone_number, user_id, updated_at, created_at)
             VALUES ("${phoneNumber}", "${userId}","${date}" ,"${date}" ) 
             ON DUPLICATE KEY UPDATE updated_at="${date}";
             `);
+    } catch (err) {
+      throw new Error(`Erro ao inserir o telefone do usuario ${err.message}`)
+    }
+
   }
 
   async sendBirthday(
@@ -116,15 +129,19 @@ export class UserDataBase extends BaseDataBase
     prevTable: string
   ): Promise<void> {
     await this.previousConsult(prevTable, userId);
-    await this.connection.raw(`
+    try {
+      await this.connection.raw(`
             INSERT INTO ${UserDataBase.TABLE_BIRTHDAY} (birthday, user_id, updated_at, created_at)
             VALUES ("${brithday}", "${userId}","${date}","${date}"  ) 
             ON DUPLICATE KEY UPDATE updated_at="${date}";
             `);
+    } catch (err) {
+      throw new Error(`Erro ao inserir o aniversario do usuario ${err.message}`)
+    }
   }
 
   async sendAdress(
-    cep: number,
+    cep: string,
     street: string,
     number: number,
     complement: string,
@@ -132,15 +149,29 @@ export class UserDataBase extends BaseDataBase
     state: string,
     userId: string,
     date: string,
-    prevTable: string
+    prevTable: string,
+    streetApi: string,
+    cityApi: string,
+    stateApi: string,
+    divergenceFromApi: boolean
+
   ): Promise<void> {
     await this.previousConsult(prevTable, userId);
-    await this.connection.raw(`
-            INSERT INTO ${UserDataBase.TABLE_ADRESS} 
-            (cep, street, number, complement, city, state, user_id, updated_at, created_at)
-            VALUES ("${cep}", "${street}","${number}","${complement}","${city}","${state}","${userId}","${date}" ,"${date}" ) 
-            ON DUPLICATE KEY UPDATE updated_at="${date}";
-            `);
+    try {
+      const divergenceStorageBoolean = divergenceFromApi ? 1 : 0;
+      await this.connection.raw(`
+    INSERT INTO ${UserDataBase.TABLE_ADRESS} 
+    (cep, street, number, complement, city, state, user_id, updated_at, created_at, street_api, city_api, state_api, divergence_api)
+    VALUES ("${cep}", "${street}","${number}","${complement}","${city}",
+    "${state}","${userId}","${date}" ,"${prevTable}","${streetApi}","${cityApi}",
+    "${stateApi}" ,"${divergenceStorageBoolean}"  ) 
+    ON DUPLICATE KEY UPDATE updated_at="${date}";
+    `);
+    } catch (err) {
+      throw new Error(`Erro ao inserir o endereco do usuario ${err.message}`)
+    }
+
+
   }
 
   async sendAmountRequested(
@@ -150,20 +181,29 @@ export class UserDataBase extends BaseDataBase
     prevTable: string
   ): Promise<void> {
     await this.previousConsult(prevTable, userId);
-    await this.connection.raw(`
-            INSERT INTO ${UserDataBase.TABLE_LOANS} (total_amount, user_id, updated_at, created_at)
-            VALUES ("${amountRequested}", "${userId}", "${date}","${date}" )
-            ON DUPLICATE KEY UPDATE updated_at="${date}";
+    try {
+      await this.connection.raw(`
+    INSERT INTO ${UserDataBase.TABLE_LOANS} (total_amount, user_id, updated_at, created_at)
+    VALUES ("${amountRequested}", "${userId}", "${date}","${date}" )
+    ON DUPLICATE KEY UPDATE updated_at="${date}";
     `);
+    } catch (err) {
+      throw new Error(`Erro ao inserir o valor do credito do usuario ${err.message}`)
+    }
+
+
   }
 
-  async getOrder(userId: string): Promise<string[]> {
-    const result = await this.connection.raw(`
-    SELECT endpoints_order FROM ${UserDataBase.TABLE_USERS} 
+  async getOrder(userId: string): Promise<any> {
+
+    try {
+      const result = await this.connection.raw(`
+    SELECT endpoints_order As 'order' FROM ${UserDataBase.TABLE_USERS} 
     WHERE id="${userId}"
     `)
-    return result[0][0]
+      return result[0][0]
+    } catch (err) {
+      throw new Error(`Erro ao consultar a ordem de endpoints do usuario ${err.message}`)
+    }
   }
 }
-
-

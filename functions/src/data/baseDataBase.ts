@@ -10,5 +10,4 @@ export abstract class BaseDataBase {
             database: process.env.DATABASE_DB
         }
     })
-
 }

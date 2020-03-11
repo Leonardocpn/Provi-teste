@@ -1,37 +1,40 @@
 import { GetUserIdFromTokenGateway } from "../../gateways/auth/autenticationGateway";
-import { SendAmountRequestedGateway } from "../../gateways/user/userGateway";
+import { SendAmountRequestedGateway, GetEndpointsOrder } from "../../gateways/user/userGateway";
 import moment from "moment"
-import { Order, UseCase } from "../../OrderOfRequester/orderOfRequester";
+import { getOrderInfo } from "../../endpoinsInfo/endpoinsInfo";
 
 export class SendAmountRequestedUC {
     constructor(
         private getUserIdFromTokenGateway: GetUserIdFromTokenGateway,
-        private sendAmountRequestedGateway: SendAmountRequestedGateway
-    ){}
+        private sendAmountRequestedGateway: SendAmountRequestedGateway,
+        private getEndpointsOrder: GetEndpointsOrder,
+        private useCaseOrder: string = "sendAmountRequested"
+    ) { }
 
     async execute(input: SendAmountRequestedUCInput): Promise<SendAmountRequestedUCOutput> {
-        try{
+        try {
             this.validadeInput(input)
             const userId: string = this.getUserIdFromTokenGateway.getUserIdFromToken(
                 input.token
             );
             const date = moment().format("DD/MM/YYYY HH-mm-ss");
-            const prevTable = Order[UseCase.AMOUNT_REQUESTED].prevTable
+            const userOrdemFromDb = await this.getEndpointsOrder.getOrder(userId)
+            const orderInfo = getOrderInfo(userOrdemFromDb, this.useCaseOrder)
+            const prevTable = orderInfo.prevTable
             await this.sendAmountRequestedGateway.sendAmountRequested(input.data, userId, date, prevTable)
-
             return {
-                    sucess: "true",
-                    nextEndpoint: Order[UseCase.AMOUNT_REQUESTED].nextEndpoint
-                  };
-            } catch (err) {
-                throw new Error (err.message)
-          }
+                sucess: "true",
+                nextEndpoint: orderInfo.nextEndpoint
+            };
+        } catch (err) {
+            throw new Error(err.message)
         }
+    }
 
     validadeInput(input: SendAmountRequestedUCInput): void {
-        if(!input.data){
+        if (!input.data) {
             throw new Error("Valor solicitado não informado")
-            
+
         }
     }
 }

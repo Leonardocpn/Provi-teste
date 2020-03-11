@@ -5,34 +5,34 @@ import express, { Request, Response, response } from "express";
 import {
   CreateUserUC,
   CreateUserUCInput
-} from "./business/useCases/user/createUser";
-import { UserDataBase } from "./data/userDataBase";
-import { BcryptImplamantation } from "./services/bcryptCryptography";
-import { UuidIdGenerator } from "./services/uuidIdGenerator";
-import { JWTCryptography } from "./services/JWTCryptography";
-import { LoginUC, LoginUCInput } from "./business/useCases/auth/login";
+} from "../../src/business/useCases/user/createUser";
+import { UserDataBase } from "../../src/data/userDataBase";
+import { BcryptImplamantation } from "../../src/services/bcryptCryptography";
+import { UuidIdGenerator } from "../../src/services/uuidIdGenerator";
+import { JWTCryptography } from "../../src/services/JWTCryptography";
+import { LoginUC, LoginUCInput } from "../../src/business/useCases/auth/login";
 import {
   SendCpfUserUC,
   SendCpfUserUCInput
-} from "./business/useCases/user/sendCpf";
+} from "../../src/business/useCases/user/sendCpf";
 import {
   SendFullNameUserUC,
   SendFullNameUserUCInput
-} from "./business/useCases/user/sendFullName";
+} from "../../src/business/useCases/user/sendFullName";
 import {
   SendPhoneNumberUserUC,
   SendPhoneNumberUserUCInput
-} from "./business/useCases/user/sendPhoneNumber";
+} from "../../src/business/useCases/user/sendPhoneNumber";
 import {
   SendBirthdayUserUC,
   SendBirthdayUserUCInput
-} from "./business/useCases/user/sendBirthday";
+} from "../../src/business/useCases/user/sendBirthday";
 import {
   SendAdressUserUc,
   SendAdressUserUcInput
-} from "./business/useCases/user/sendAdress";
-import { ViaCep } from "./services/viaCep";
-import { SendAmountRequestedUC, SendAmountRequestedUCInput } from "./business/useCases/user/sendAmountRequested";
+} from "../../src/business/useCases/user/sendAdress";
+import { ViaCep } from "../../src/services/viaCep";
+import { SendAmountRequestedUC, SendAmountRequestedUCInput } from "../../src/business/useCases/user/sendAmountRequested";
 
 admin.initializeApp();
 const app = express();
@@ -105,6 +105,7 @@ app.post("/sendCpfUser", async (req: Request, res: Response) => {
   try {
     const useCase = new SendCpfUserUC(
       new JWTCryptography(),
+      new UserDataBase(),
       new UserDataBase()
     );
 
@@ -148,6 +149,7 @@ app.post("/sendFhoneNumber", async (req: Request, res: Response) => {
   try {
     const useCase = new SendPhoneNumberUserUC(
       new JWTCryptography(),
+      new UserDataBase(),
       new UserDataBase()
     );
 
@@ -169,6 +171,7 @@ app.post("/sendBirthday", async (req: Request, res: Response) => {
   try {
     const useCase = new SendBirthdayUserUC(
       new JWTCryptography(),
+      new UserDataBase(),
       new UserDataBase()
     );
 
@@ -191,7 +194,8 @@ app.post("/sendAdress", async (req: Request, res: Response) => {
     const useCase = new SendAdressUserUc(
       new JWTCryptography(),
       new UserDataBase(),
-      new ViaCep()
+      new ViaCep(),
+      new UserDataBase()
     );
 
     const input: SendAdressUserUcInput = {
@@ -218,6 +222,7 @@ app.post("/sendAmountRequested", async (req: Request, res: Response) => {
     const useCase = new SendAmountRequestedUC(
       new JWTCryptography(),
       new UserDataBase(),
+      new UserDataBase()
     );
 
     const input: SendAmountRequestedUCInput = {
