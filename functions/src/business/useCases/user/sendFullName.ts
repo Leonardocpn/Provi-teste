@@ -20,6 +20,7 @@ export class SendFullNameUserUC {
       const userId = this.getUserIdFromTokenGateway.getUserIdFromToken(
         input.token
       );
+      this.validateInput(input)
       const date = moment().format("DD/MM/YYYY HH-mm-ss");
       const userOrdemFromDb = await this.getEndpointsOrder.getOrder(userId)
       const orderInfo = getOrderInfo(userOrdemFromDb, this.useCaseOrder)
