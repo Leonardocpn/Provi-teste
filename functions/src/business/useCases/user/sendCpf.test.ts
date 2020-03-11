@@ -63,8 +63,10 @@ describe("Test for sendCpfUC", () => {
         )
 
         await expect(useCase.execute(input))
-            .rejects.toThrowError("CPF inválido, conferir o numero informado")
+            .rejects.toThrowError("CPF inválido ou não informado, conferir o numero informado")
 
     })
+
+    
 
 })
