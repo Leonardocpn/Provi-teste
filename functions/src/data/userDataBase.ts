@@ -163,7 +163,7 @@ export class UserDataBase extends BaseDataBase
     INSERT INTO ${UserDataBase.TABLE_ADRESS} 
     (cep, street, number, complement, city, state, user_id, updated_at, created_at, street_api, city_api, state_api, divergence_api)
     VALUES ("${cep}", "${street}","${number}","${complement}","${city}",
-    "${state}","${userId}","${date}" ,"${prevTable}","${streetApi}","${cityApi}",
+    "${state}","${userId}","${date}" ,"${date}","${streetApi}","${cityApi}",
     "${stateApi}" ,"${divergenceStorageBoolean}"  ) 
     ON DUPLICATE KEY UPDATE updated_at="${date}";
     `);
