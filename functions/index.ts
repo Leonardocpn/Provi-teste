@@ -5,34 +5,34 @@ import express, { Request, Response } from "express";
 import {
   CreateUserUC,
   CreateUserUCInput
-} from "../../src/business/useCases/user/createUser";
-import { UserDataBase } from "../../src/data/userDataBase";
-import { BcryptImplamantation } from "../../src/services/bcryptCryptography";
-import { UuidIdGenerator } from "../../src/services/uuidIdGenerator";
-import { JWTCryptography } from "../../src/services/JWTCryptography";
-import { LoginUC, LoginUCInput } from "../../src/business/useCases/auth/login";
+} from "./src/business/useCases/user/createUser";
+import { UserDataBase } from "./src/data/userDataBase";
+import { BcryptImplamantation } from "./src/services/bcryptCryptography";
+import { UuidIdGenerator } from "./src/services/uuidIdGenerator";
+import { JWTCryptography } from "./src/services/JWTCryptography";
+import { LoginUC, LoginUCInput } from "./src/business/useCases/auth/login";
 import {
   SendCpfUserUC,
   SendCpfUserUCInput
-} from "../../src/business/useCases/user/sendCpf";
+} from "./src/business/useCases/user/sendCpf";
 import {
   SendFullNameUserUC,
   SendFullNameUserUCInput
-} from "../../src/business/useCases/user/sendFullName";
+} from "./src/business/useCases/user/sendFullName";
 import {
   SendPhoneNumberUserUC,
   SendPhoneNumberUserUCInput
-} from "../../src/business/useCases/user/sendPhoneNumber";
+} from "./src/business/useCases/user/sendPhoneNumber";
 import {
   SendBirthdayUserUC,
   SendBirthdayUserUCInput
-} from "../../src/business/useCases/user/sendBirthday";
+} from "./src/business/useCases/user/sendBirthday";
 import {
   SendAdressUserUc,
   SendAdressUserUcInput
-} from "../../src/business/useCases/user/sendAdress";
-import { ViaCep } from "../../src/services/viaCep";
-import { SendAmountRequestedUC, SendAmountRequestedUCInput } from "../../src/business/useCases/user/sendAmountRequested";
+} from "./src/business/useCases/user/sendAdress";
+import { ViaCep } from "./src/services/viaCep";
+import { SendAmountRequestedUC, SendAmountRequestedUCInput } from "./src/business/useCases/user/sendAmountRequested";
 
 admin.initializeApp();
 const app = express();

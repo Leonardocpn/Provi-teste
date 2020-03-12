@@ -10,6 +10,9 @@ const endpoinsInfo: { name: string, table: string }[] = [
 export function getOrderInfo(userOrdemFromDb: any, usecase: string): { prevTable: string, nextEndpoint: string } {
     const userOrderArray: string = userOrdemFromDb.order
     const userOrderArraySplit = userOrderArray.split(",")
+    if(userOrderArraySplit.indexOf(usecase) === -1){
+        throw new Error ("Endpoint não requisitado para o usuário")
+    }
     const prevIndex = userOrderArraySplit.indexOf(usecase) - 1
     const nextIndex = userOrderArraySplit.indexOf(usecase) + 1
     const prevUseCase = userOrderArraySplit[prevIndex]
