@@ -76,7 +76,7 @@ export class UserDataBase extends BaseDataBase
 
     const data = query[0][0];
     if (!data) {
-      throw new Error("Consulta anterior não executada");
+      throw new Error("Endpoint anterior não preenchido");
     }
   }
 
