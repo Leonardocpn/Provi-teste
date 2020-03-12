@@ -1,7 +1,7 @@
 import * as functions from "firebase-functions";
 import cors from "cors";
 import * as admin from "firebase-admin";
-import express, { Request, Response, response } from "express";
+import express, { Request, Response } from "express";
 import {
   CreateUserUC,
   CreateUserUCInput
@@ -46,7 +46,7 @@ app.get("/hello", (req: Request, res: Response) => {
   try {
     res.send("Hello GET");
   } catch (err) {
-    response.status(400).send({
+    res.status(400).send({
       message: err.message
     });
   }
