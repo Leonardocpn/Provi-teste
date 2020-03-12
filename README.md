@@ -1,7 +1,7 @@
 # Provi-teste
 Teste para admissão na Provi
 
-A linguagem utilizada foi Typescript com Node.js
+A linguagem utilizada foi Javascript com Typescript e Node.js
 
 Para os endpoints foi o Firebase Functions com Express.js
 
