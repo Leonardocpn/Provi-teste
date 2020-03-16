@@ -5,34 +5,34 @@ import express, { Request, Response } from "express";
 import {
   CreateUserUC,
   CreateUserUCInput
-} from "./src/business/useCases/user/createUser";
-import { UserDataBase } from "./src/data/userDataBase";
-import { BcryptImplamantation } from "./src/services/bcryptCryptography";
-import { UuidIdGenerator } from "./src/services/uuidIdGenerator";
-import { JWTCryptography } from "./src/services/JWTCryptography";
-import { LoginUC, LoginUCInput } from "./src/business/useCases/auth/login";
+} from "../business/useCases/user/createUser";
+import { UserDataBase } from "../data/userDataBase";
+import { BcryptImplamantation } from "../services/bcryptCryptography";
+import { UuidIdGenerator } from "../services/uuidIdGenerator";
+import { JWTCryptography } from "../services/JWTCryptography";
+import { LoginUC, LoginUCInput } from "../business/useCases/auth/login";
 import {
   SendCpfUserUC,
   SendCpfUserUCInput
-} from "./src/business/useCases/user/sendCpf";
+} from "../business/useCases/user/sendCpf";
 import {
   SendFullNameUserUC,
   SendFullNameUserUCInput
-} from "./src/business/useCases/user/sendFullName";
+} from "../business/useCases/user/sendFullName";
 import {
   SendPhoneNumberUserUC,
   SendPhoneNumberUserUCInput
-} from "./src/business/useCases/user/sendPhoneNumber";
+} from "../business/useCases/user/sendPhoneNumber";
 import {
   SendBirthdayUserUC,
   SendBirthdayUserUCInput
-} from "./src/business/useCases/user/sendBirthday";
+} from "../business/useCases/user/sendBirthday";
 import {
   SendAdressUserUc,
   SendAdressUserUcInput
-} from "./src/business/useCases/user/sendAdress";
-import { ViaCep } from "./src/services/viaCep";
-import { SendAmountRequestedUC, SendAmountRequestedUCInput } from "./src/business/useCases/user/sendAmountRequested";
+} from "../business/useCases/user/sendAdress";
+import { ViaCep } from "../services/viaCep";
+import { SendAmountRequestedUC, SendAmountRequestedUCInput } from "../business/useCases/user/sendAmountRequested";
 
 admin.initializeApp();
 const app = express();
