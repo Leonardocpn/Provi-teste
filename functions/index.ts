@@ -42,20 +42,6 @@ const getTokenFromHeaders = (headers: any): string => {
   return (headers["auth"] as string) || "";
 };
 
-app.get("/hello", (req: Request, res: Response) => {
-  try {
-    res.send("Hello GET");
-  } catch (err) {
-    res.status(400).send({
-      message: err.message
-    });
-  }
-});
-
-app.post("/hello", (req, res) => {
-  res.send("Hello POST");
-});
-
 app.post("/createUser", async (req: Request, res: Response) => {
   try {
     const useCase = new CreateUserUC(
