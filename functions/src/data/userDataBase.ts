@@ -8,22 +8,21 @@ import {
   SendBirthdayUserGateway,
   SendAdressUserGateway,
   SendAmountRequestedGateway,
-  GetEndpointsOrder
+  GetEndpointsOrder,
 } from "../business/gateways/user/userGateway";
 import { User } from "../business/entities/user/user";
 
 export class UserDataBase extends BaseDataBase
   implements
-  CreateUserGateway,
-  GetUserByEmailGateway,
-  SendCpfUserGateway,
-  SendFullNameUserGateway,
-  SendPhoneNumberUserGateway,
-  SendBirthdayUserGateway,
-  SendAdressUserGateway,
-  SendAmountRequestedGateway,
-  GetEndpointsOrder {
-
+    CreateUserGateway,
+    GetUserByEmailGateway,
+    SendCpfUserGateway,
+    SendFullNameUserGateway,
+    SendPhoneNumberUserGateway,
+    SendBirthdayUserGateway,
+    SendAdressUserGateway,
+    SendAmountRequestedGateway,
+    GetEndpointsOrder {
   private static TABLE_USERS: string = "Users";
   private static TABLE_CPF: string = "Cpfs";
   private static TABLE_NAME: string = "Full_Names";
@@ -35,11 +34,13 @@ export class UserDataBase extends BaseDataBase
   async createUser(user: User): Promise<void> {
     try {
       await this.connection.raw(`
-    INSERT INTO ${UserDataBase.TABLE_USERS} (id, email, password, endpoints_order)
+    INSERT INTO ${
+      UserDataBase.TABLE_USERS
+    } (id, email, password, endpoints_order)
     VALUES ("${user.getId()}", "${user.getEmail()}", "${user.getPassword()}", '${user.getEndpointsOrder()}')
     `);
     } catch (err) {
-      throw new Error(`Erro no banco ao criar um usuario : ${err.message}`)
+      throw new Error(`Erro no banco ao criar um usuario : ${err.message}`);
     }
   }
 
@@ -59,20 +60,18 @@ export class UserDataBase extends BaseDataBase
   async sendCpfUser(cpf: string, userId: string, date: string): Promise<void> {
     try {
       await this.connection.raw(`
-            INSERT INTO ${UserDataBase.TABLE_CPF} (cpf, user_id, updated_at, created_at)
-            VALUES ("${cpf}", "${userId}", "${date}", "${date}");
+            INSERT INTO ${UserDataBase.TABLE_CPF} (cpf, user_id, updated_at)
+            VALUES ("${cpf}", "${userId}", "${date}");
             `);
     } catch (err) {
       throw new Error(`Erro ao inserir o cpf do usuario ${err.message}`);
-
     }
   }
 
   async previousConsult(table: string, userId: string) {
     const query = await this.connection.raw(`
       SELECT * FROM ${table}
-      WHERE user_id="${userId}"`
-    );
+      WHERE user_id="${userId}"`);
 
     const data = query[0][0];
     if (!data) {
@@ -99,7 +98,9 @@ export class UserDataBase extends BaseDataBase
             ON DUPLICATE KEY UPDATE updated_at="${date}";
             `);
     } catch (err) {
-      throw new Error(`Erro ao inserir o nome completo do usuario ${err.message}`)
+      throw new Error(
+        `Erro ao inserir o nome completo do usuario ${err.message}`
+      );
     }
   }
 
@@ -117,9 +118,8 @@ export class UserDataBase extends BaseDataBase
             ON DUPLICATE KEY UPDATE updated_at="${date}";
             `);
     } catch (err) {
-      throw new Error(`Erro ao inserir o telefone do usuario ${err.message}`)
+      throw new Error(`Erro ao inserir o telefone do usuario ${err.message}`);
     }
-
   }
 
   async sendBirthday(
@@ -136,7 +136,9 @@ export class UserDataBase extends BaseDataBase
             ON DUPLICATE KEY UPDATE updated_at="${date}";
             `);
     } catch (err) {
-      throw new Error(`Erro ao inserir o aniversario do usuario ${err.message}`)
+      throw new Error(
+        `Erro ao inserir o aniversario do usuario ${err.message}`
+      );
     }
   }
 
@@ -154,7 +156,6 @@ export class UserDataBase extends BaseDataBase
     cityApi: string,
     stateApi: string,
     divergenceFromApi: boolean
-
   ): Promise<void> {
     await this.previousConsult(prevTable, userId);
     try {
@@ -168,10 +169,8 @@ export class UserDataBase extends BaseDataBase
     ON DUPLICATE KEY UPDATE updated_at="${date}";
     `);
     } catch (err) {
-      throw new Error(`Erro ao inserir o endereco do usuario ${err.message}`)
+      throw new Error(`Erro ao inserir o endereco do usuario ${err.message}`);
     }
-
-
   }
 
   async sendAmountRequested(
@@ -188,22 +187,23 @@ export class UserDataBase extends BaseDataBase
     ON DUPLICATE KEY UPDATE updated_at="${date}";
     `);
     } catch (err) {
-      throw new Error(`Erro ao inserir o valor do credito do usuario ${err.message}`)
+      throw new Error(
+        `Erro ao inserir o valor do credito do usuario ${err.message}`
+      );
     }
-
-
   }
 
   async getOrder(userId: string): Promise<any> {
-
     try {
       const result = await this.connection.raw(`
     SELECT endpoints_order As 'order' FROM ${UserDataBase.TABLE_USERS} 
     WHERE id="${userId}"
-    `)
-      return result[0][0]
+    `);
+      return result[0][0];
     } catch (err) {
-      throw new Error(`Erro ao consultar a ordem de endpoints do usuario ${err.message}`)
+      throw new Error(
+        `Erro ao consultar a ordem de endpoints do usuario ${err.message}`
+      );
     }
   }
 }

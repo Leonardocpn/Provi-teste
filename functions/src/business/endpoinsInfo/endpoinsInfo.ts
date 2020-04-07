@@ -1,34 +1,55 @@
-const endpoinsInfo: { name: string, table: string }[] = [
-    { name: "sendCpf", table: "Cpfs" },
-    { name: "sendFullName", table: "Full_Names" },
-    { name: "sendBirthday", table: "Birthdays" },
-    { name: "sendPhoneNumber", table: "Phone_Numbers" },
-    { name: "sendAdress", table: "Adresses" },
-    { name: "sendAmountRequested", table: "Loans" }]
+import { OrderInfo } from "../../utils/getOrderInfo";
 
+interface EndpointsInfo {
+  name: string;
+  table: string;
+}
 
-export function getOrderInfo(userOrdemFromDb: any, usecase: string): { prevTable: string, nextEndpoint: string } {
-    const userOrderArray: string = userOrdemFromDb.order
-    const userOrderArraySplit = userOrderArray.split(",")
-    if(userOrderArraySplit.indexOf(usecase) === -1){
-        throw new Error ("Endpoint não requisitado para o usuário")
+const endpoinsInfo: EndpointsInfo[] = [
+  { name: "sendCpf", table: "Cpfs" },
+  { name: "sendFullName", table: "Full_Names" },
+  { name: "sendBirthday", table: "Birthdays" },
+  { name: "sendPhoneNumber", table: "Phone_Numbers" },
+  { name: "sendAdress", table: "Adresses" },
+  { name: "sendAmountRequested", table: "Loans" },
+];
+
+export function getOrderInfo(userOrderFromDb: any, useCase: string): OrderInfo {
+  const userOrderArray: string = userOrderFromDb.order;
+  const userOrderArraySplit = userOrderArray.split(",");
+  if (userOrderArraySplit.indexOf(useCase) === -1) {
+    throw new Error("Endpoint não requisitado para o usuário");
+  }
+  const useCaseOrder = getUseCaseOrder(userOrderArraySplit, useCase);
+  let prevTable: string = "";
+  let nextEndpoint: string = "ultimo endpoint";
+  for (const i of endpoinsInfo) {
+    if (i.name === useCaseOrder.prevUseCase) {
+      prevTable = i.table;
     }
-    const prevIndex = userOrderArraySplit.indexOf(usecase) - 1
-    const nextIndex = userOrderArraySplit.indexOf(usecase) + 1
-    const prevUseCase = userOrderArraySplit[prevIndex]
-    const nextUsecase = userOrderArraySplit[nextIndex]
-    let prevTable: string = ""
-    let nextEndpoint: string = "ultimo endpoint"
-    for (const i of endpoinsInfo) {
-        if (i.name === prevUseCase) {
-            prevTable = i.table
-        }
-    }
-    if (nextIndex < userOrderArraySplit.length) {
-        nextEndpoint = nextUsecase
-    }
-    return {
-        prevTable,
-        nextEndpoint
-    }
+  }
+  if (useCaseOrder.nextIndex < userOrderArraySplit.length) {
+    nextEndpoint = useCaseOrder.nextUseCase;
+  }
+  return {
+    prevTable,
+    nextEndpoint,
+  };
+}
+
+function getUseCaseOrder(
+  userOrderArraySplit: string[],
+  useCase: string
+): UseCaseOrder {
+  const prevIndex = userOrderArraySplit.indexOf(useCase) - 1;
+  const nextIndex = userOrderArraySplit.indexOf(useCase) + 1;
+  const prevUseCase = userOrderArraySplit[prevIndex];
+  const nextUseCase = userOrderArraySplit[nextIndex];
+  return { prevUseCase, nextUseCase, nextIndex };
+}
+
+interface UseCaseOrder {
+  prevUseCase: string;
+  nextUseCase: string;
+  nextIndex: number;
 }
