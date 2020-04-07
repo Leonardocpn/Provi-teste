@@ -2,10 +2,15 @@ import { GetUserIdFromTokenGateway } from "../../gateways/auth/autenticationGate
 import {
   SendAdressUserGateway,
   GetEndpointsOrder,
+  UserAdress,
+  AdressFromApi,
 } from "../../gateways/user/userGateway";
-import moment from "moment";
-import { GetAdressFromApiGateway } from "../../gateways/services/getAdressFromApiGateway";
-import { getOrderInfo } from "../../endpoinsInfo/endpoinsInfo";
+import {
+  GetAdressFromApiGateway,
+  ViaCepAdress,
+} from "../../gateways/services/getAdressFromApiGateway";
+import { getDate } from "../../../utils/getDate";
+import { getOrderInfo } from "../../../business/endpoinsInfo/endpoinsInfo";
 
 export class SendAdressUserUc {
   constructor(
@@ -13,7 +18,7 @@ export class SendAdressUserUc {
     private sendAdressUserGateway: SendAdressUserGateway,
     private getAdressFromApiGateway: GetAdressFromApiGateway,
     private getEndpointsOrder: GetEndpointsOrder,
-    private useCaseOrder: string = "sendAdress"
+    private useCaseName: string = "sendAdress"
   ) {}
 
   async execute(input: SendAdressUserUcInput): Promise<SendAdressUserUcOutput> {
@@ -23,37 +28,29 @@ export class SendAdressUserUc {
       const userId: string = this.getUserIdFromTokenGateway.getUserIdFromToken(
         input.token
       );
-      const date = moment().format("DD/MM/YYYY HH-mm-ss");
-      const userOrdemFromDb = await this.getEndpointsOrder.getOrder(userId);
-      const orderInfo = getOrderInfo(userOrdemFromDb, this.useCaseOrder);
-      const prevTable = orderInfo.prevTable;
-      const externalAdress = await this.getAdressFromApiGateway.getAdress(
-        validateCep
+      const date = getDate();
+      const orderInfo = await getOrderInfo(
+        this.getEndpointsOrder,
+        userId,
+        this.useCaseName
       );
-      const adressFromApi = {
-        street: externalAdress.data.logradouro,
-        city: externalAdress.data.localidade,
-        state: externalAdress.data.uf,
+      const externalAdress = await this.getExternalAdress(validateCep, input);
+
+      const userAdress: UserAdress = {
+        cep: validateCep,
+        street: input.street,
+        number: input.number,
+        complement: input.complement,
+        city: input.city,
+        state: input.state,
       };
 
-      const adressDivergence = this.verifyAdressDivergence(
-        input,
-        adressFromApi
-      );
       await this.sendAdressUserGateway.sendAdress(
-        validateCep,
-        input.street,
-        input.number,
-        input.complement,
-        input.city,
-        input.state,
+        userAdress,
         userId,
         date,
-        prevTable,
-        adressFromApi.street,
-        adressFromApi.city,
-        adressFromApi.state,
-        adressDivergence
+        orderInfo.prevTable,
+        externalAdress
       );
       return {
         sucess: "true",
@@ -86,16 +83,34 @@ export class SendAdressUserUc {
 
   verifyAdressDivergence(
     input: SendAdressUserUcInput,
-    adressFromApi: any
+    externalAdress: ViaCepAdress
   ): boolean {
     if (
-      input.street.toUpperCase() !== adressFromApi.street.toUpperCase() ||
-      input.city.toUpperCase() !== adressFromApi.city.toUpperCase() ||
-      input.state.toUpperCase() !== adressFromApi.state.toUpperCase()
+      input.street.toUpperCase() !==
+        externalAdress.data.logradouro.toUpperCase() ||
+      input.city.toUpperCase() !==
+        externalAdress.data.localidade.toUpperCase() ||
+      input.state.toUpperCase() !== externalAdress.data.uf.toUpperCase()
     ) {
       return true;
     }
     return false;
+  }
+
+  async getExternalAdress(
+    validateCep: string,
+    input: SendAdressUserUcInput
+  ): Promise<AdressFromApi> {
+    const externalAdress = await this.getAdressFromApiGateway.getAdress(
+      validateCep
+    );
+    const adressDivergence = this.verifyAdressDivergence(input, externalAdress);
+    return {
+      streetApi: externalAdress.data.logradouro,
+      cityApi: externalAdress.data.localidade,
+      stateApi: externalAdress.data.uf,
+      divergenceFromApi: adressDivergence,
+    };
   }
 }
 
