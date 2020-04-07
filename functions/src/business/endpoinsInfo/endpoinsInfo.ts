@@ -1,4 +1,4 @@
-import { OrderInfo } from "../../utils/getOrderInfo";
+import { GetEndpointsOrder } from "../gateways/user/userGateway";
 
 interface EndpointsInfo {
   name: string;
@@ -14,15 +14,22 @@ const endpoinsInfo: EndpointsInfo[] = [
   { name: "sendAmountRequested", table: "Loans" },
 ];
 
-export function getOrderInfo(userOrderFromDb: any, useCase: string): OrderInfo {
+export async function getOrderInfo(
+  getEndpointsOrder: GetEndpointsOrder,
+  userId: string,
+  useCaseName: string
+): Promise<OrderInfo> {
+  const userOrderFromDb = await getEndpointsOrder.getOrder(userId);
   const userOrderArray: string = userOrderFromDb.order;
   const userOrderArraySplit = userOrderArray.split(",");
-  if (userOrderArraySplit.indexOf(useCase) === -1) {
+
+  if (userOrderArraySplit.indexOf(useCaseName) === -1) {
     throw new Error("Endpoint não requisitado para o usuário");
   }
-  const useCaseOrder = getUseCaseOrder(userOrderArraySplit, useCase);
+  const useCaseOrder = getUseCaseOrder(userOrderArraySplit, useCaseName);
   let prevTable: string = "";
   let nextEndpoint: string = "ultimo endpoint";
+
   for (const i of endpoinsInfo) {
     if (i.name === useCaseOrder.prevUseCase) {
       prevTable = i.table;
@@ -52,4 +59,9 @@ interface UseCaseOrder {
   prevUseCase: string;
   nextUseCase: string;
   nextIndex: number;
+}
+
+export interface OrderInfo {
+  prevTable: string;
+  nextEndpoint: string;
 }

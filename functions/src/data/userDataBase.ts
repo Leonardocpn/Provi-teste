@@ -85,9 +85,9 @@ export class UserDataBase extends BaseDataBase
     date: string,
     prevTable: string
   ): Promise<void> {
-    const split = fullName.split(" ");
-    const first = split.slice(0, 1);
-    const last = split.slice(1).join(" ");
+    const splitName = fullName.split(" ");
+    const first = splitName.slice(0, 1);
+    const last = splitName.slice(1).join(" ");
 
     await this.previousConsult(prevTable, userId);
 
