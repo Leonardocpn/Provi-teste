@@ -9,6 +9,8 @@ import {
   SendAdressUserGateway,
   SendAmountRequestedGateway,
   GetEndpointsOrder,
+  UserAdress,
+  AdressFromApi,
 } from "../business/gateways/user/userGateway";
 import { User } from "../business/entities/user/user";
 
@@ -143,29 +145,21 @@ export class UserDataBase extends BaseDataBase
   }
 
   async sendAdress(
-    cep: string,
-    street: string,
-    number: number,
-    complement: string,
-    city: string,
-    state: string,
+    userAdress: UserAdress,
     userId: string,
     date: string,
     prevTable: string,
-    streetApi: string,
-    cityApi: string,
-    stateApi: string,
-    divergenceFromApi: boolean
+    adressFromApi: AdressFromApi
   ): Promise<void> {
     await this.previousConsult(prevTable, userId);
     try {
-      const divergenceStorageBoolean = divergenceFromApi ? 1 : 0;
+      const divergenceStorageBoolean = adressFromApi.divergenceFromApi ? 1 : 0;
       await this.connection.raw(`
     INSERT INTO ${UserDataBase.TABLE_ADRESS} 
     (cep, street, number, complement, city, state, user_id, updated_at, created_at, street_api, city_api, state_api, divergence_api)
-    VALUES ("${cep}", "${street}","${number}","${complement}","${city}",
-    "${state}","${userId}","${date}" ,"${date}","${streetApi}","${cityApi}",
-    "${stateApi}" ,"${divergenceStorageBoolean}"  ) 
+    VALUES ("${userAdress.cep}", "${userAdress.street}","${userAdress.number}","${userAdress.complement}","${userAdress.city}",
+    "${userAdress.state}","${userId}","${date}" ,"${date}","${adressFromApi.streetApi}","${adressFromApi.cityApi}",
+    "${adressFromApi.stateApi}" ,"${divergenceStorageBoolean}"  ) 
     ON DUPLICATE KEY UPDATE updated_at="${date}";
     `);
     } catch (err) {

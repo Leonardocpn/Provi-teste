@@ -35,33 +35,49 @@ export interface SendPhoneNumberUserGateway {
 }
 
 export interface SendBirthdayUserGateway {
-  sendBirthday(brithday: string, userId: string, date: string, prevTable: string): Promise<void>;
+  sendBirthday(
+    brithday: string,
+    userId: string,
+    date: string,
+    prevTable: string
+  ): Promise<void>;
 }
 
 export interface SendAdressUserGateway {
   sendAdress(
-    cep: string,
-    street: string,
-    number: number,
-    complement: string,
-    city: string,
-    state: string,
+    userAdress: UserAdress,
     userId: string,
     date: string,
     prevTable: string,
-    streetApi: string,
-    cityApi: string,
-    stateApi: string,
-    divergenceFromApi: boolean
-
+    adressFromApi: AdressFromApi
   ): Promise<void>;
 }
 
+export interface UserAdress {
+  cep: string;
+  street: string;
+  number: number;
+  complement: string;
+  city: string;
+  state: string;
+}
+
+export interface AdressFromApi {
+  streetApi: string;
+  cityApi: string;
+  stateApi: string;
+  divergenceFromApi: boolean;
+}
+
 export interface SendAmountRequestedGateway {
-  sendAmountRequested(amountRequested: number, userId: string, date: string,
-    prevTable: string): Promise<void>
+  sendAmountRequested(
+    amountRequested: number,
+    userId: string,
+    date: string,
+    prevTable: string
+  ): Promise<void>;
 }
 
 export interface GetEndpointsOrder {
-  getOrder(userId: string): Promise<any>
+  getOrder(userId: string): Promise<any>;
 }
