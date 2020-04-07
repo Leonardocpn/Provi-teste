@@ -6,10 +6,7 @@ import { UserDataBase } from "../data/userDataBase";
 import { BcryptImplamantation } from "../services/bcryptCryptography";
 import { JWTCryptography } from "../services/JWTCryptography";
 import { LoginUC, LoginUCInput } from "../business/useCases/auth/login";
-import {
-  SendCpfUserUC,
-  SendCpfUserUCInput,
-} from "../business/useCases/user/sendCpf";
+
 import {
   SendFullNameUserUC,
   SendFullNameUserUCInput,
@@ -32,14 +29,12 @@ import {
   SendAmountRequestedUCInput,
 } from "../business/useCases/user/sendAmountRequested";
 import { createUserEndpoint } from "./endpoints/createUser";
+import { getTokenFromHeaders } from "../utils/getTokenFromHeaders";
+import { sendCpfEndpoint } from "./endpoints/sendCpf";
 
 admin.initializeApp();
 const app = express();
 app.use(cors({ origin: true }));
-
-const getTokenFromHeaders = (headers: any): string => {
-  return (headers["auth"] as string) || "";
-};
 
 app.post("/createUser", createUserEndpoint);
 
@@ -65,27 +60,7 @@ app.post("/login", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/sendCpfUser", async (req: Request, res: Response) => {
-  try {
-    const useCase = new SendCpfUserUC(
-      new JWTCryptography(),
-      new UserDataBase(),
-      new UserDataBase()
-    );
-
-    const input: SendCpfUserUCInput = {
-      token: getTokenFromHeaders(req.headers),
-      data: req.body.data,
-    };
-
-    const result = await useCase.execute(input);
-    res.status(200).send(result);
-  } catch (err) {
-    res.status(400).send({
-      message: err.message,
-    });
-  }
-});
+app.post("/sendCpfUser", sendCpfEndpoint);
 
 app.post("/sendFullName", async (req: Request, res: Response) => {
   try {
