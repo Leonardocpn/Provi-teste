@@ -10,10 +10,6 @@ import {
   SendPhoneNumberUserUC,
   SendPhoneNumberUserUCInput,
 } from "../business/useCases/user/sendPhoneNumber";
-import {
-  SendBirthdayUserUC,
-  SendBirthdayUserUCInput,
-} from "../business/useCases/user/sendBirthday";
 
 import {
   SendAmountRequestedUC,
@@ -23,6 +19,7 @@ import { createUserEndpoint } from "./endpoints/createUser";
 import { sendCpfEndpoint } from "./endpoints/sendCpf";
 import { sendFullNameEndpoint } from "./endpoints/sendFullName";
 import { sendAdressEndpoint } from "./endpoints/sendAdress";
+import { sendBirthdayEndpoint } from "./endpoints/sendBirthday";
 
 admin.initializeApp();
 const app = express();
@@ -78,27 +75,7 @@ app.post("/sendFhoneNumber", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/sendBirthday", async (req: Request, res: Response) => {
-  try {
-    const useCase = new SendBirthdayUserUC(
-      new JWTCryptography(),
-      new UserDataBase(),
-      new UserDataBase()
-    );
-
-    const input: SendBirthdayUserUCInput = {
-      token: req.headers.authorization,
-      data: req.body.data,
-    };
-
-    const result = await useCase.execute(input);
-    res.status(200).send(result);
-  } catch (err) {
-    res.status(400).send({
-      message: err.message,
-    });
-  }
-});
+app.post("/sendBirthday", sendBirthdayEndpoint);
 
 app.post("/sendAdress", sendAdressEndpoint);
 
