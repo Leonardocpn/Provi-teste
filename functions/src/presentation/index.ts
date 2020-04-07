@@ -2,37 +2,36 @@ import * as functions from "firebase-functions";
 import cors from "cors";
 import * as admin from "firebase-admin";
 import express, { Request, Response } from "express";
-import {
-  CreateUserUC,
-  CreateUserUCInput
-} from "../business/useCases/user/createUser";
 import { UserDataBase } from "../data/userDataBase";
 import { BcryptImplamantation } from "../services/bcryptCryptography";
-import { UuidIdGenerator } from "../services/uuidIdGenerator";
 import { JWTCryptography } from "../services/JWTCryptography";
 import { LoginUC, LoginUCInput } from "../business/useCases/auth/login";
 import {
   SendCpfUserUC,
-  SendCpfUserUCInput
+  SendCpfUserUCInput,
 } from "../business/useCases/user/sendCpf";
 import {
   SendFullNameUserUC,
-  SendFullNameUserUCInput
+  SendFullNameUserUCInput,
 } from "../business/useCases/user/sendFullName";
 import {
   SendPhoneNumberUserUC,
-  SendPhoneNumberUserUCInput
+  SendPhoneNumberUserUCInput,
 } from "../business/useCases/user/sendPhoneNumber";
 import {
   SendBirthdayUserUC,
-  SendBirthdayUserUCInput
+  SendBirthdayUserUCInput,
 } from "../business/useCases/user/sendBirthday";
 import {
   SendAdressUserUc,
-  SendAdressUserUcInput
+  SendAdressUserUcInput,
 } from "../business/useCases/user/sendAdress";
 import { ViaCep } from "../services/viaCep";
-import { SendAmountRequestedUC, SendAmountRequestedUCInput } from "../business/useCases/user/sendAmountRequested";
+import {
+  SendAmountRequestedUC,
+  SendAmountRequestedUCInput,
+} from "../business/useCases/user/sendAmountRequested";
+import { createUserEndpoint } from "./endpoints/createUser";
 
 admin.initializeApp();
 const app = express();
@@ -42,28 +41,7 @@ const getTokenFromHeaders = (headers: any): string => {
   return (headers["auth"] as string) || "";
 };
 
-app.post("/createUser", async (req: Request, res: Response) => {
-  try {
-    const useCase = new CreateUserUC(
-      new UserDataBase(),
-      new BcryptImplamantation(),
-      new UuidIdGenerator(),
-      new JWTCryptography()
-    );
-
-    const input: CreateUserUCInput = {
-      email: req.body.email,
-      password: req.body.password,
-    };
-
-    const result = await useCase.execute(input);
-    res.status(200).send(result);
-  } catch (err) {
-    res.status(400).send({
-      message: err.message
-    });
-  }
-});
+app.post("/createUser", createUserEndpoint);
 
 app.post("/login", async (req: Request, res: Response) => {
   try {
@@ -75,14 +53,14 @@ app.post("/login", async (req: Request, res: Response) => {
 
     const input: LoginUCInput = {
       email: req.body.email,
-      password: req.body.password
+      password: req.body.password,
     };
 
     const result = await useCase.execute(input);
     res.status(200).send(result);
   } catch (err) {
     res.status(400).send({
-      message: err.message
+      message: err.message,
     });
   }
 });
@@ -97,14 +75,14 @@ app.post("/sendCpfUser", async (req: Request, res: Response) => {
 
     const input: SendCpfUserUCInput = {
       token: getTokenFromHeaders(req.headers),
-      data: req.body.data
+      data: req.body.data,
     };
 
     const result = await useCase.execute(input);
     res.status(200).send(result);
   } catch (err) {
     res.status(400).send({
-      message: err.message
+      message: err.message,
     });
   }
 });
@@ -119,14 +97,14 @@ app.post("/sendFullName", async (req: Request, res: Response) => {
 
     const input: SendFullNameUserUCInput = {
       token: getTokenFromHeaders(req.headers),
-      data: req.body.data
+      data: req.body.data,
     };
 
     const result = await useCase.execute(input);
     res.status(200).send(result);
   } catch (err) {
     res.status(400).send({
-      message: err.message
+      message: err.message,
     });
   }
 });
@@ -141,14 +119,14 @@ app.post("/sendFhoneNumber", async (req: Request, res: Response) => {
 
     const input: SendPhoneNumberUserUCInput = {
       token: getTokenFromHeaders(req.headers),
-      data: req.body.data
+      data: req.body.data,
     };
 
     const result = await useCase.execute(input);
     res.status(200).send(result);
   } catch (err) {
     res.status(400).send({
-      message: err.message
+      message: err.message,
     });
   }
 });
@@ -163,14 +141,14 @@ app.post("/sendBirthday", async (req: Request, res: Response) => {
 
     const input: SendBirthdayUserUCInput = {
       token: getTokenFromHeaders(req.headers),
-      data: req.body.data
+      data: req.body.data,
     };
 
     const result = await useCase.execute(input);
     res.status(200).send(result);
   } catch (err) {
     res.status(400).send({
-      message: err.message
+      message: err.message,
     });
   }
 });
@@ -191,14 +169,14 @@ app.post("/sendAdress", async (req: Request, res: Response) => {
       number: req.body.number,
       complement: req.body.complement,
       city: req.body.city,
-      state: req.body.state
+      state: req.body.state,
     };
 
     const result = await useCase.execute(input);
     res.status(200).send(result);
   } catch (err) {
     res.status(400).send({
-      message: err.message
+      message: err.message,
     });
   }
 });
@@ -213,14 +191,14 @@ app.post("/sendAmountRequested", async (req: Request, res: Response) => {
 
     const input: SendAmountRequestedUCInput = {
       token: getTokenFromHeaders(req.headers),
-      data: req.body.data
+      data: req.body.data,
     };
 
     const result = await useCase.execute(input);
     res.status(200).send(result);
   } catch (err) {
     res.status(400).send({
-      message: err.message
+      message: err.message,
     });
   }
 });
