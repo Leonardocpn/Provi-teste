@@ -6,11 +6,6 @@ import { UserDataBase } from "../data/userDataBase";
 import { BcryptImplamantation } from "../services/bcryptCryptography";
 import { JWTCryptography } from "../services/JWTCryptography";
 import { LoginUC, LoginUCInput } from "../business/useCases/auth/login";
-
-import {
-  SendFullNameUserUC,
-  SendFullNameUserUCInput,
-} from "../business/useCases/user/sendFullName";
 import {
   SendPhoneNumberUserUC,
   SendPhoneNumberUserUCInput,
@@ -29,8 +24,8 @@ import {
   SendAmountRequestedUCInput,
 } from "../business/useCases/user/sendAmountRequested";
 import { createUserEndpoint } from "./endpoints/createUser";
-import { getTokenFromHeaders } from "../utils/getTokenFromHeaders";
 import { sendCpfEndpoint } from "./endpoints/sendCpf";
+import { sendFullNameEndpoint } from "./endpoints/sendFullName";
 
 admin.initializeApp();
 const app = express();
@@ -62,27 +57,7 @@ app.post("/login", async (req: Request, res: Response) => {
 
 app.post("/sendCpfUser", sendCpfEndpoint);
 
-app.post("/sendFullName", async (req: Request, res: Response) => {
-  try {
-    const useCase = new SendFullNameUserUC(
-      new JWTCryptography(),
-      new UserDataBase(),
-      new UserDataBase()
-    );
-
-    const input: SendFullNameUserUCInput = {
-      token: getTokenFromHeaders(req.headers),
-      data: req.body.data,
-    };
-
-    const result = await useCase.execute(input);
-    res.status(200).send(result);
-  } catch (err) {
-    res.status(400).send({
-      message: err.message,
-    });
-  }
-});
+app.post("/sendFullName", sendFullNameEndpoint);
 
 app.post("/sendFhoneNumber", async (req: Request, res: Response) => {
   try {
@@ -93,7 +68,7 @@ app.post("/sendFhoneNumber", async (req: Request, res: Response) => {
     );
 
     const input: SendPhoneNumberUserUCInput = {
-      token: getTokenFromHeaders(req.headers),
+      token: req.headers.authorization,
       data: req.body.data,
     };
 
@@ -115,7 +90,7 @@ app.post("/sendBirthday", async (req: Request, res: Response) => {
     );
 
     const input: SendBirthdayUserUCInput = {
-      token: getTokenFromHeaders(req.headers),
+      token: req.headers.authorization,
       data: req.body.data,
     };
 
@@ -138,7 +113,7 @@ app.post("/sendAdress", async (req: Request, res: Response) => {
     );
 
     const input: SendAdressUserUcInput = {
-      token: getTokenFromHeaders(req.headers),
+      token: req.headers.authorization,
       cep: req.body.cep,
       street: req.body.street,
       number: req.body.number,
@@ -165,7 +140,7 @@ app.post("/sendAmountRequested", async (req: Request, res: Response) => {
     );
 
     const input: SendAmountRequestedUCInput = {
-      token: getTokenFromHeaders(req.headers),
+      token: req.headers.authorization,
       data: req.body.data,
     };
 

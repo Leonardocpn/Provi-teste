@@ -5,13 +5,13 @@ import {
 } from "../../gateways/user/userGateway";
 import CPF from "cpf-check";
 import { getDate } from "../../../utils/getDate";
-import { getOrderInfos } from "../../../utils/getOrderInfo";
+import { getOrderInfo } from "../../../business/endpoinsInfo/endpoinsInfo";
 export class SendCpfUserUC {
   constructor(
     private getUserIdFromTokenGateway: GetUserIdFromTokenGateway,
     private sendCpfUserGateway: SendCpfUserGateway,
     private getEndpointsOrder: GetEndpointsOrder,
-    private useCaseOrder: string = "sendCpf"
+    private useCaseName: string = "sendCpf"
   ) {}
 
   async execute(input: SendCpfUserUCInput): Promise<SendCpfUserUCOutput> {
@@ -26,10 +26,10 @@ export class SendCpfUserUC {
       }
       const date = getDate();
       const cpfFormated = CPF.format(input.data);
-      const orderInfo = await getOrderInfos(
+      const orderInfo = await getOrderInfo(
         this.getEndpointsOrder,
         userId,
-        this.useCaseOrder
+        this.useCaseName
       );
       await this.sendCpfUserGateway.sendCpfUser(cpfFormated, userId, date);
       return {
