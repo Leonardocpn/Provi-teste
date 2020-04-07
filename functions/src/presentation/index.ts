@@ -7,11 +7,6 @@ import { BcryptImplamantation } from "../services/bcryptCryptography";
 import { JWTCryptography } from "../services/JWTCryptography";
 import { LoginUC, LoginUCInput } from "../business/useCases/auth/login";
 import {
-  SendPhoneNumberUserUC,
-  SendPhoneNumberUserUCInput,
-} from "../business/useCases/user/sendPhoneNumber";
-
-import {
   SendAmountRequestedUC,
   SendAmountRequestedUCInput,
 } from "../business/useCases/user/sendAmountRequested";
@@ -20,6 +15,7 @@ import { sendCpfEndpoint } from "./endpoints/sendCpf";
 import { sendFullNameEndpoint } from "./endpoints/sendFullName";
 import { sendAdressEndpoint } from "./endpoints/sendAdress";
 import { sendBirthdayEndpoint } from "./endpoints/sendBirthday";
+import { sendPhoneNumberEndpoint } from "./endpoints/sendPhoneNumber";
 
 admin.initializeApp();
 const app = express();
@@ -53,27 +49,7 @@ app.post("/sendCpfUser", sendCpfEndpoint);
 
 app.post("/sendFullName", sendFullNameEndpoint);
 
-app.post("/sendFhoneNumber", async (req: Request, res: Response) => {
-  try {
-    const useCase = new SendPhoneNumberUserUC(
-      new JWTCryptography(),
-      new UserDataBase(),
-      new UserDataBase()
-    );
-
-    const input: SendPhoneNumberUserUCInput = {
-      token: req.headers.authorization,
-      data: req.body.data,
-    };
-
-    const result = await useCase.execute(input);
-    res.status(200).send(result);
-  } catch (err) {
-    res.status(400).send({
-      message: err.message,
-    });
-  }
-});
+app.post("/sendFhoneNumber", sendPhoneNumberEndpoint);
 
 app.post("/sendBirthday", sendBirthdayEndpoint);
 
