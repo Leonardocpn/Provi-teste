@@ -3,8 +3,8 @@ import {
   SendPhoneNumberUserGateway,
   GetEndpointsOrder,
 } from "../../gateways/user/userGateway";
-import moment from "moment";
-import { getOrderInfo } from "../../endpoinsInfo/endpoinsInfo";
+import { getDate } from "../../../utils/getDate";
+import { getOrderInfo } from "../../../business/endpoinsInfo/endpoinsInfo";
 
 export class SendPhoneNumberUserUC {
   constructor(
@@ -22,15 +22,17 @@ export class SendPhoneNumberUserUC {
       const userId: string = this.getUserIdFromTokenGateway.getUserIdFromToken(
         input.token
       );
-      const date = moment().format("DD/MM/YYYY HH-mm-ss");
-      const userOrdemFromDb = await this.getEndpointsOrder.getOrder(userId);
-      const orderInfo = getOrderInfo(userOrdemFromDb, this.useCaseOrder);
-      const prevTable = orderInfo.prevTable;
+      const date = getDate();
+      const orderInfo = await getOrderInfo(
+        this.getEndpointsOrder,
+        userId,
+        this.useCaseOrder
+      );
       await this.sendPhoneNumberUser.sendPhoneNumber(
         input.data,
         userId,
         date,
-        prevTable
+        orderInfo.prevTable
       );
       return {
         sucess: "true",

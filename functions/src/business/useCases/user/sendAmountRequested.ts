@@ -3,15 +3,15 @@ import {
   SendAmountRequestedGateway,
   GetEndpointsOrder,
 } from "../../gateways/user/userGateway";
-import moment from "moment";
-import { getOrderInfo } from "../../endpoinsInfo/endpoinsInfo";
+import { getDate } from "../../../utils/getDate";
+import { getOrderInfo } from "../../../business/endpoinsInfo/endpoinsInfo";
 
 export class SendAmountRequestedUC {
   constructor(
     private getUserIdFromTokenGateway: GetUserIdFromTokenGateway,
     private sendAmountRequestedGateway: SendAmountRequestedGateway,
     private getEndpointsOrder: GetEndpointsOrder,
-    private useCaseOrder: string = "sendAmountRequested"
+    private useCaseName: string = "sendAmountRequested"
   ) {}
 
   async execute(
@@ -22,15 +22,17 @@ export class SendAmountRequestedUC {
       const userId: string = this.getUserIdFromTokenGateway.getUserIdFromToken(
         input.token
       );
-      const date = moment().format("DD/MM/YYYY HH-mm-ss");
-      const userOrdemFromDb = await this.getEndpointsOrder.getOrder(userId);
-      const orderInfo = getOrderInfo(userOrdemFromDb, this.useCaseOrder);
-      const prevTable = orderInfo.prevTable;
+      const date = getDate();
+      const orderInfo = await getOrderInfo(
+        this.getEndpointsOrder,
+        userId,
+        this.useCaseName
+      );
       await this.sendAmountRequestedGateway.sendAmountRequested(
         input.data,
         userId,
         date,
-        prevTable
+        orderInfo.prevTable
       );
       return {
         sucess: "true",
