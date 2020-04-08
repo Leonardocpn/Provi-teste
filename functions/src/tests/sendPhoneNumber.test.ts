@@ -11,7 +11,7 @@ import {
 describe("Test for sendPhoneNumberUC", () => {
   it("Should save Phone Number for a user", async () => {
     const input: SendPhoneNumberUserUCInput = {
-      data: 999999999,
+      data: "999999999",
       token: "token",
     };
 
@@ -24,11 +24,9 @@ describe("Test for sendPhoneNumberUC", () => {
     };
 
     const getEndpointsOrder: GetEndpointsOrder = {
-      getOrder: jest
-        .fn()
-        .mockReturnValue({
-          order: "sendCpf,sendFullName,sendBirthday,sendPhoneNumber,sendAdress",
-        }),
+      getOrder: jest.fn().mockReturnValue({
+        order: "sendCpf,sendFullName,sendBirthday,sendPhoneNumber,sendAdress",
+      }),
     };
 
     const useCase = new SendPhoneNumberUserUC(
@@ -48,7 +46,7 @@ describe("Test for sendPhoneNumberUC", () => {
 
   it("Should thow an error for invalid input, phone number is missing", async () => {
     const input: SendPhoneNumberUserUCInput = {
-      data: 0,
+      data: "",
       token: "token",
     };
 
@@ -61,11 +59,9 @@ describe("Test for sendPhoneNumberUC", () => {
     };
 
     const getEndpointsOrder: GetEndpointsOrder = {
-      getOrder: jest
-        .fn()
-        .mockReturnValue({
-          order: "sendCpf,sendFullName,sendBirthday,sendPhoneNumber,sendAdress",
-        }),
+      getOrder: jest.fn().mockReturnValue({
+        order: "sendCpf,sendFullName,sendBirthday,sendPhoneNumber,sendAdress",
+      }),
     };
 
     const useCase = new SendPhoneNumberUserUC(

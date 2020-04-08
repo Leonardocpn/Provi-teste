@@ -52,7 +52,7 @@ export class SendPhoneNumberUserUC {
 
 export interface SendPhoneNumberUserUCInput {
   token: string | undefined;
-  data: number;
+  data: string;
 }
 
 export interface SendPhoneNumberUserUCOutput {

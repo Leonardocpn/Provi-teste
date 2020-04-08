@@ -107,7 +107,7 @@ export class UserDataBase extends BaseDataBase
   }
 
   async sendPhoneNumber(
-    phoneNumber: number,
+    phoneNumber: string,
     userId: string,
     date: string,
     prevTable: string
