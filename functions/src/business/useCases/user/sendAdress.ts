@@ -23,7 +23,6 @@ export class SendAdressUserUc {
 
   async execute(input: SendAdressUserUcInput): Promise<SendAdressUserUcOutput> {
     try {
-      this.validateInput(input);
       const validateCep = this.validateCep(input.cep);
       const userId: string = this.getUserIdFromTokenGateway.getUserIdFromToken(
         input.token
@@ -61,23 +60,8 @@ export class SendAdressUserUc {
     }
   }
 
-  validateInput(input: SendAdressUserUcInput): void {
-    if (
-      !input.cep ||
-      !input.street ||
-      !input.number ||
-      !input.city ||
-      !input.state
-    ) {
-      throw new Error("Dados do endereço faltanto");
-    }
-  }
-
   validateCep(cep: string): string {
     const verifiedCep = cep.replace(/\D/g, "");
-    if (verifiedCep.length !== 8) {
-      throw new Error("CEP mal informado");
-    }
     return verifiedCep;
   }
 

@@ -21,7 +21,7 @@ import { sendAdressValidation } from "./InputValidation/sendAdress";
 import { sendAmountRequestedValidation } from "./InputValidation/sendAmountRequested";
 
 admin.initializeApp();
-const app = express();
+export const app = express();
 app.use(cors({ origin: true }));
 app.use(express.json());
 app.use(errors());

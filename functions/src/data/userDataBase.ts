@@ -42,21 +42,54 @@ export class UserDataBase extends BaseDataBase
     VALUES ("${user.getId()}", "${user.getEmail()}", "${user.getPassword()}", '${user.getEndpointsOrder()}')
     `);
     } catch (err) {
-      throw new Error(`Erro no banco ao criar um usuario : ${err.message}`);
+      throw new Error(`Erro no banco ao criar um usuario`);
     }
   }
 
   async getUserByEmail(email: string): Promise<User> {
     const query = await this.connection.raw(`
-                SELECT * FROM ${UserDataBase.TABLE_USERS}
-                WHERE ${UserDataBase.TABLE_USERS}.email="${email}"
+                SELECT * FROM ${UserDataBase.TABLE_USERS} u
+                LEFT JOIN ${UserDataBase.TABLE_CPF} c
+                  ON u.id=c.user_id
+                LEFT JOIN ${UserDataBase.TABLE_NAME} n
+                  ON u.id=n.user_id
+                LEFT JOIN ${UserDataBase.TABLE_BIRTHDAY} b
+                  ON u.id=b.user_id
+                LEFT JOIN ${UserDataBase.TABLE_PHONE} p
+                  ON u.id=p.user_id
+                LEFT JOIN ${UserDataBase.TABLE_ADRESS} a
+                  ON u.id=a.user_id
+                LEFT JOIN ${UserDataBase.TABLE_LOANS} l 
+                  ON u.id=l.user_id
+                WHERE u.email="${email}"
             `);
 
     const user = query[0][0];
     if (!user) {
       throw new Error("Usuario nao encontrado");
     }
-    return new User(user.id, user.email, user.password);
+    const adress =
+      user.street +
+      " " +
+      user.number +
+      ", " +
+      user.complement +
+      ", " +
+      user.city +
+      ", " +
+      user.state;
+    return new User(
+      user.id,
+      user.email,
+      user.password,
+      user.cpf,
+      user.phone_number,
+      adress,
+      user.first_name,
+      user.last_name,
+      user.birthday,
+      user.total_amount
+    );
   }
 
   async sendCpfUser(cpf: string, userId: string, date: string): Promise<void> {
@@ -66,7 +99,7 @@ export class UserDataBase extends BaseDataBase
             VALUES ("${cpf}", "${userId}", "${date}");
             `);
     } catch (err) {
-      throw new Error(`Erro ao inserir o cpf do usuario ${err.message}`);
+      throw new Error(`Erro ao inserir o cpf do usuario`);
     }
   }
 
@@ -100,9 +133,7 @@ export class UserDataBase extends BaseDataBase
             ON DUPLICATE KEY UPDATE updated_at="${date}";
             `);
     } catch (err) {
-      throw new Error(
-        `Erro ao inserir o nome completo do usuario ${err.message}`
-      );
+      throw new Error(`Erro ao inserir o nome completo do usuario`);
     }
   }
 
@@ -120,7 +151,7 @@ export class UserDataBase extends BaseDataBase
             ON DUPLICATE KEY UPDATE updated_at="${date}";
             `);
     } catch (err) {
-      throw new Error(`Erro ao inserir o telefone do usuario ${err.message}`);
+      throw new Error(`Erro ao inserir o telefone do usuario`);
     }
   }
 
@@ -138,9 +169,7 @@ export class UserDataBase extends BaseDataBase
             ON DUPLICATE KEY UPDATE updated_at="${date}";
             `);
     } catch (err) {
-      throw new Error(
-        `Erro ao inserir o aniversario do usuario ${err.message}`
-      );
+      throw new Error(`Erro ao inserir o aniversario do usuario`);
     }
   }
 
@@ -163,7 +192,7 @@ export class UserDataBase extends BaseDataBase
     ON DUPLICATE KEY UPDATE updated_at="${date}";
     `);
     } catch (err) {
-      throw new Error(`Erro ao inserir o endereco do usuario ${err.message}`);
+      throw new Error(`Erro ao inserir o endereco do usuario`);
     }
   }
 
@@ -181,9 +210,7 @@ export class UserDataBase extends BaseDataBase
     ON DUPLICATE KEY UPDATE updated_at="${date}";
     `);
     } catch (err) {
-      throw new Error(
-        `Erro ao inserir o valor do credito do usuario ${err.message}`
-      );
+      throw new Error(`Erro ao inserir o valor do credito do usuario`);
     }
   }
 
@@ -193,11 +220,10 @@ export class UserDataBase extends BaseDataBase
     SELECT endpoints_order As 'order' FROM ${UserDataBase.TABLE_USERS} 
     WHERE id="${userId}"
     `);
+
       return result[0][0];
     } catch (err) {
-      throw new Error(
-        `Erro ao consultar a ordem de endpoints do usuario ${err.message}`
-      );
+      throw new Error(`Erro ao consultar a ordem de endpoints do usuario`);
     }
   }
 }

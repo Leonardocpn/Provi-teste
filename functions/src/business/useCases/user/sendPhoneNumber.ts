@@ -18,7 +18,6 @@ export class SendPhoneNumberUserUC {
     input: SendPhoneNumberUserUCInput
   ): Promise<SendPhoneNumberUserUCOutput> {
     try {
-      this.validadeInput(input);
       const userId: string = this.getUserIdFromTokenGateway.getUserIdFromToken(
         input.token
       );
@@ -40,12 +39,6 @@ export class SendPhoneNumberUserUC {
       };
     } catch (err) {
       throw new Error(err.message);
-    }
-  }
-
-  validadeInput(input: SendPhoneNumberUserUCInput) {
-    if (!input.data) {
-      throw new Error("Telefone do usuário faltando");
     }
   }
 }
