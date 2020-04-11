@@ -18,7 +18,6 @@ export class SendAmountRequestedUC {
     input: SendAmountRequestedUCInput
   ): Promise<SendAmountRequestedUCOutput> {
     try {
-      this.validadeInput(input);
       const userId: string = this.getUserIdFromTokenGateway.getUserIdFromToken(
         input.token
       );
@@ -40,12 +39,6 @@ export class SendAmountRequestedUC {
       };
     } catch (err) {
       throw new Error(err.message);
-    }
-  }
-
-  validadeInput(input: SendAmountRequestedUCInput): void {
-    if (!input.data) {
-      throw new Error("Valor solicitado não informado");
     }
   }
 }

@@ -21,7 +21,7 @@ export class SendFullNameUserUC {
       const userId = this.getUserIdFromTokenGateway.getUserIdFromToken(
         input.token
       );
-      this.validateInput(input);
+
       const date = getDate();
       const orderInfo = await getOrderInfo(
         this.getEndpointsOrder,
@@ -40,11 +40,6 @@ export class SendFullNameUserUC {
       };
     } catch (err) {
       throw new Error(err.message);
-    }
-  }
-  validateInput(input: SendFullNameUserUCInput) {
-    if (!input.data) {
-      throw new Error("Nome do usuário faltando");
     }
   }
 }

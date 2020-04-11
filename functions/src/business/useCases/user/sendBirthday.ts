@@ -5,7 +5,6 @@ import {
 } from "../../gateways/user/userGateway";
 import { getDate } from "../../../utils/getDate";
 import { getOrderInfo } from "../../../business/endpoinsInfo/endpoinsInfo";
-import moment from "moment";
 
 export class SendBirthdayUserUC {
   constructor(
@@ -23,7 +22,6 @@ export class SendBirthdayUserUC {
         input.token
       );
 
-      const verifiedDate = this.validadeInput(input);
       const date = getDate();
       const orderInfo = await getOrderInfo(
         this.getEndpointsOrder,
@@ -31,7 +29,7 @@ export class SendBirthdayUserUC {
         this.useCaseName
       );
       await this.sendBirthdayUserGateway.sendBirthday(
-        verifiedDate,
+        input.data,
         userId,
         date,
         orderInfo.prevTable
@@ -43,19 +41,6 @@ export class SendBirthdayUserUC {
     } catch (err) {
       throw new Error(err.message);
     }
-  }
-
-  validadeInput(input: SendBirthdayUserUCInput) {
-    if (!input.data) {
-      throw new Error("Data de aniversário nao informada");
-    }
-    const verifyDate = moment(input.data, "DD/MM/YYYY");
-    if (!moment(verifyDate, "DD/MM/YYYY").isValid()) {
-      throw new Error("Entrada da data incorreta, seguir o modelo DD/MM/YYYY");
-    }
-    const date = moment(input.data, "DD/MM/YYYY").format("DD/MM/YYYY");
-
-    return date;
   }
 }
 

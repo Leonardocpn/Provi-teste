@@ -20,9 +20,7 @@ export class SendCpfUserUC {
         input.token
       );
       if (!CPF.validate(input.data)) {
-        throw new Error(
-          "CPF inválido ou não informado, conferir o numero informado"
-        );
+        throw new Error("CPF inválido, conferir o numero informado");
       }
       const date = getDate();
       const cpfFormated = CPF.format(input.data);

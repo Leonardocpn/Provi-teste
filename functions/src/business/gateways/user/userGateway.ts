@@ -27,7 +27,7 @@ export interface SendFullNameUserGateway {
 
 export interface SendPhoneNumberUserGateway {
   sendPhoneNumber(
-    phoneNumber: number,
+    phoneNumber: string,
     userId: string,
     date: string,
     prevTable: string
