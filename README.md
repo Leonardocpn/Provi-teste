@@ -25,7 +25,7 @@
   as migrations e fornecer dados para elas com as seeds. As migrations são muito interessantes
   para verificar a forma de como o banco de dados foi evoluindo com o tempo
 
-Obs: É necessário criar um banco de dados com o mysql na sua máquina local para que o teste de
+Obs: É necessário criar um banco de dados com o mysql na sua máquina local para que os testes de
 integração funcionem. Os dados do banco são:
 
     host: "127.0.0.1",
