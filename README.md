@@ -9,12 +9,15 @@
 # Teste para admissão na Provi
 
 - Foi utilizado o Node.js com a linguagem Typescript
+
   Acredito que uma linguagem tipada adicione garantias para a construção do backend
 
 - Os endpoints foram criados com o uso do Express.js e hospedados com o Firebase Functions
+
   Pude treinar o deploy nos serviços da Google
 
 - O banco de dados utilizado foi o MySQL hospedado em uma EC2 da AWS
+
   Pude treinar a manipulação dos serviços da AWS
 
 - Os testes foram realizados com o Jest e supertest. O ambiente de testes foi separado do
@@ -32,18 +35,20 @@ integração funcionem. Os dados do banco são:
 
 # Cobertura dos testes
 
-![Coverage](functions/src/tests/assets/test_coverage.png? raw=true)
+![Coverage](functions/src/tests/assets/test_coverage.png?raw=true)
 
 - Foi utilizado o npm para gerenciamento de pacotes
 
 # Documentação para os endpoints no Postman
 
 Esta é a documentação dos endpoints com exemplos para as requisições e as respostas
+
 https://documenter.getpostman.com/view/9133514/SzS1SoGD
 
 # Script para criação do banco de dados
 
 https://firebasestorage.googleapis.com/v0/b/provi-teste.appspot.com/o/BancoDeDadosProviTeste.sql?alt=media&token=948cfea7-0225-40f8-ba3f-b96c52464726
+
 Obs: As tabelas também estão documentadas nos arquivos da
 pasta migrations
 
