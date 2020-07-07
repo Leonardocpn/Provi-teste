@@ -8,32 +8,34 @@
 
 # Teste para admissão na Provi
 
-- Foi utilizado o Node.js com a linguagem Typescript
+- Foi utilizado o Node.js com a linguagem Javascript com o superset Typescript
 
   Acredito que uma linguagem tipada adicione garantias para a construção do backend
 
 - Os endpoints foram criados com o uso do Express.js e hospedados com o Firebase Functions
 
-  Pude treinar o deploy nos serviços da Google
+  Para demonstrar o deploy nos serviços da Google e comunicação com diferentes serviços
 
-- O banco de dados utilizado foi o MySQL hospedado em uma EC2 da AWS
+- Para o banco de dados foi utilizado o MySQL hospedado em uma EC2 da AWS
 
-  Pude treinar a manipulação dos serviços da AWS
-  
+  Para demonstrar a manipulação dos serviços da AWS e comunicação com diferentes serviços
+
 - Foi utilizado o npm para gerenciamento de pacotes
 
 - Os testes foram realizados com o Jest e supertest. O ambiente de testes foi separado do
   ambiente de produção com o uso do knex, com ele é possivel criar as tabelas de testes com
   as migrations e fornecer dados para elas com as seeds. As migrations são muito interessantes
-  para verificar a forma de como o banco de dados foi evoluindo com o tempo
+  para verificar a forma como o banco de dados foi evoluindo com o tempo.
 
 Obs: É necessário criar um banco de dados com o mysql na sua máquina local para que os testes de
 integração funcionem. Os dados do banco são:
 
+```sh
     host: "127.0.0.1",
     user: "teste",
     password: "teste",
     database: "provitestedb"
+```
 
 ## Cobertura dos testes
 
@@ -70,3 +72,15 @@ pasta migrations
 - cross-env
 - ts-node
 - uuid
+
+## Consulta a API externa
+
+- Foi consultada a api do Via Cep para a validação dos ceps
+
+## Pontos de melhoria
+
+- Incluir mais testes
+
+- Criar um pipeline de CI/CD
+
+- Criar um container no Docker para a aplicação junto com o banco de dados
