@@ -37,7 +37,7 @@
     "firebase-functions": "^3.3.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.11",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "momentjs": "^2.0.0",
     "mysql": "^2.18.1",
     "supertest": "^4.0.2",
